@@ -1,7 +1,6 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:poipoi/signUp.dart' as signUp;
 
 void main() {
   runApp(const MyApp());
@@ -19,6 +18,10 @@ class MyApp extends StatelessWidget {
         fontFamily: GoogleFonts.openSans().fontFamily
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      routes: <String, WidgetBuilder>{
+        "/signup" : (BuildContext context)=> new signUp.SignUpPage(title:'Sign Up'),
+        //add more routes here
+      },
     );
   }
 }
@@ -41,95 +44,137 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+bool isEmail = false;
+
 class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
 
-    return new Scaffold(
-        body: new Stack(
+    void _changed(bool visibility) {
+      setState((){
+          isEmail = visibility;
+      });
+    }
+
+
+    return Scaffold(
+        body: Stack(
           children: <Widget>[
-            new Container(
-              decoration: new BoxDecoration(
-                image: new DecorationImage(
-                  image: new AssetImage("assets/images/main_bg.jpg"),
+             Container(
+              decoration:  BoxDecoration(
+                image:  DecorationImage(
+                  image:  const AssetImage("assets/images/main_bg.jpg"),
                   fit: BoxFit.cover,
-                  colorFilter: new ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+                  colorFilter:  ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
                   alignment: Alignment(-0.3, 0)),
               ),
             ),
-            new Container(
+             Container(
                 width: 50.00,
                 height: 50.00,
                 margin: EdgeInsets.only(top: 30),
-                decoration: new BoxDecoration(
-                  image: new DecorationImage(
+                decoration:  const BoxDecoration(
+                  image:  DecorationImage(
                     image: ExactAssetImage('assets/images/logo.png'),
                     fit: BoxFit.contain,
                   ),
                 )),
-            new Center(
+             Center(
               child: Column(
+                mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Spacer(flex: 4,),
-                new Expanded(
-                    flex: 4,
+                Spacer(flex: 4),
+                 Expanded(
+                    flex: 8,
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-
-                    new FractionallySizedBox(
+                          FractionallySizedBox(
                         widthFactor: 0.8,
-                        child: Text('By clicking Log In, you agree with our Terms. Learn how we process your data in our Privacy Policy amd Cookies Policy.',
-                            style: TextStyle(color: Colors.white,fontSize: 16) )
+                        child: Column(children: [
+                          const TextField(style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(width: 3, color: Colors.white),
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+
+                        ),
+                          labelStyle: TextStyle(
+                            color: Colors.white, //<-- SEE HERE
+                          ),
+                        labelText: 'Username',
+                        )
+                          ),
+                          SizedBox(height: 10),
+                          const TextField(style: TextStyle(color: Colors.white),
+                              obscureText: true,
+                              enableSuggestions: false,
+                              autocorrect: false,
+                              decoration: InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(width: 3, color: Colors.white),
+                                  borderRadius: BorderRadius.all(Radius.circular(20)),
+
+                                ),
+                                labelStyle: TextStyle(
+                                  color: Colors.white,
+                                ),
+                                labelText: 'Password',
+                              )
+                          ),
+                          SizedBox(height: 10),
+
+                          FractionallySizedBox(
+                          widthFactor: 1,
+                        child:
+                         OutlinedButton(
+                           onPressed: (){},
+                           style: ButtonStyle(
+                             foregroundColor:  MaterialStateProperty.all(Colors.black),
+                             backgroundColor: MaterialStateProperty.all(Colors.white),
+                             shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0))),
+                           ),
+                           child: const Text(
+                             "Login" ,
+                             style: TextStyle(
+                             fontSize: 15.0,
+                               fontWeight: FontWeight.bold,
+                           ),),
+                         )
+                          ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                            const Text('By clicking Log In, you agree with our Terms. Learn how we process your data in our Privacy Policy amd Cookies Policy.',
+                              style: TextStyle(color: Colors.white,fontSize: 16),
+                            ),
+                          SizedBox(height: 10),
+                          const Text('Don\'t have an account yet?.',
+                            style: TextStyle(color: Colors.white,fontSize: 16),
+                          ),
+                          TextButton(
+                            onPressed: ()
+                            {
+                              Navigator.pushNamed(
+                                context,
+                                '/signup',
+                              );
+                            },
+                            child: const
+                            Text("Sign Up", style: const TextStyle())
+                          )
+                        ],
+                      )
+
+                        ],
+                        )
+
                     ),
 
-                    new Container(
-                        margin: EdgeInsets.only(top:20),
-                        child : new FractionallySizedBox(
-                          widthFactor: 0.8,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                foregroundColor: Color.fromARGB(255, 157, 157, 157),
-                                backgroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                )
-                            ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-                            onPressed: (){},
-                            child: Image.asset('assets/images/socialbutton/googlebutton.png' ),
-                          ),
-                        )
-                    ),
-                    new Container(
-                        margin: EdgeInsets.only(top:20),
-                        child : new FractionallySizedBox(
-                          widthFactor: 0.8,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.black,
-                              backgroundColor: Color.fromARGB(255, 24,119,242),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),),
-                            ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-                            onPressed: (){},
-                            child: Image.asset('assets/images/socialbutton/facebookbutton.png' ),
-                          ),
-                        )
-                    ),
-                          new Container(
-                              margin: EdgeInsets.only(top:10),
-                              child : TextButton(onPressed: (){},
-                                style: TextButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  textStyle: TextStyle(decoration: TextDecoration.underline,)
-                                ),
-                                        child: Text('Use email & password'),
-                              ),
-                          ),
                   ]
                   ),
                 ),
