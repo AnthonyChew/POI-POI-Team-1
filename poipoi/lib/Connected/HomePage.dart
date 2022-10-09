@@ -10,6 +10,8 @@ import '../post.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'dart:async';
 import 'dart:ui';
+import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
+
 
 
 class HomePage extends StatefulWidget {
@@ -28,12 +30,16 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+
   //hardcode.. need to edit later on..
+  //gets a list of posts
   List<Post> posts = [
-    Post(title: 'Punggol Park', description: 'Fun day at the park!!', username: 'Peter', imageURL: ['assets/images/pp1.JPG', 'assets/images/pp2.jpg'] ),
+    Post(title: 'Punggol Park', description: 'Fun day at the park!!', username: 'Peter', imageURL: ['assets/images/pp1.JPG', 'assets/images/pp2.jpg', 'assets/images/pp1.JPG'] ),
 
     Post(title: 'Woodlands Park', description: 'Fun day at the park!!', username: 'Peter', imageURL: ['assets/images/pp1.JPG', 'assets/images/pp2.jpg'] ),
   ];
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -92,11 +98,24 @@ class _HomePageState extends State<HomePage> {
 
                             Container(
                                 padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                                child: Image(
-                                  image: AssetImage(posts[index].imageURL[0],),
-                                )
-                            ),
+                                child: ImageSlideshow(
+                                  indicatorColor: Colors.blue,
+                                 // onPageChanged: (value) { debugPrint('Page changed: $value');},
+                                  isLoop: false,
+                                  children: List.generate(
+                                      posts[index].imageURL.length, (i)
+                                            {
+                                              return Image.asset(
+                                                posts[index].imageURL[i],
+                                                fit: BoxFit.cover,
+                                              );
 
+                                            }
+
+
+                                ),
+
+                            ),),
                             Container(
 
                               padding: const EdgeInsets.fromLTRB(2.0,10.0,250.0,10.0),
@@ -122,7 +141,7 @@ class _HomePageState extends State<HomePage> {
 
                           ]
 
-                      )
+                      ),
                   );
                 }
 
