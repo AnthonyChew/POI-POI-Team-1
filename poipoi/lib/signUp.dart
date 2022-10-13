@@ -1,14 +1,14 @@
+import 'dart:io';
+
+import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:developer' as developer;
 
-bool accountFlag = false,
-    nameFlag = false,
-    birthdayFlag = false,
-    sexFlag = false,
-    picFlag = false,
-    isMale = false,
-    isFemale = false;
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key, required this.title});
@@ -29,51 +29,64 @@ class SignUpPage extends StatefulWidget {
 }
 
 class signUp extends State<SignUpPage> {
+
+  bool accountFlag = false,
+      nameFlag = false,
+      birthdayFlag = false,
+      sexFlag = false,
+      picFlag = false,
+      isMale = false,
+      isFemale = false,
+      isChoose = false;
+
+  bool usernameError = false,
+      passwordError = false,
+      passwordCError = false,
+      nameError = false,
+      dateError = false,
+      sexError = false,
+      picError = false;
+  String username = "", password = "";
+
+  File? image;
+
+  String imagePath = "";
+  File imageTemp = File("");
+
   TextEditingController dateController = TextEditingController();
+
+  final usernameContoller = TextEditingController();
+  final passwordContoller = TextEditingController();
+  final passwordCContoller = TextEditingController();
+  final nameContoller = TextEditingController();
 
   void sexChanged(bool ismale) {
     setState(() {
-      if (ismale)
-      {
-        if(isFemale) isFemale = false;
+      if (ismale) {
+        if (isFemale) isFemale = false;
         isMale = true;
-      }
-      else
-      {
-        if(isMale) isMale = false;
+      } else {
+        if (isMale) isMale = false;
         isFemale = true;
       }
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    dateController.text = "";
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-    accountFlag = false;
-    nameFlag = false;
-    birthdayFlag = false;
-    sexFlag = false;
-    picFlag = false;
-    isMale = false;
-    isFemale = false;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    accountFlag = false;
-    nameFlag = false;
-    birthdayFlag = false;
-    sexFlag = false;
-    picFlag = false;
-    isMale = false;
-    isFemale = false;
+  Future pickImage() async {
+    try {
+      PickedFile? image = await ImagePicker().getImage(
+        source: ImageSource.gallery,
+        maxWidth: 1800,
+        maxHeight: 1800,
+      );
+      if (image != null) {
+        imageTemp = File(image.path);
+        imagePath = image.path;
+        setState(() {isChoose = true; picError = false;});
+      }
+    } on PlatformException catch (e) {
+      print('Failed to pick image: $e');
+    }
   }
 
   @override
@@ -81,425 +94,646 @@ class signUp extends State<SignUpPage> {
     return Scaffold(
         body: Stack(
       children: <Widget>[
+        //Background image
         Container(
           decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.6),
           ),
         ),
+        //Back Button container
         SafeArea(
           child: BackButton(
             onPressed: () => Navigator.pop(context, true),
           ),
           top: true,
         ),
-        if (!accountFlag)
-          Center(
-              child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
+        //Account container
+        Column(
+          children: [
+            if (!accountFlag)
               Expanded(
-                flex: 8,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Accounts",
-                          style: TextStyle(fontSize: 32, color: Colors.white)),
-                      SizedBox(height: 40),
-                      FractionallySizedBox(
-                          widthFactor: 0.8,
-                          child: Column(
-                            children: [
-                              const TextField(
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 24),
-                                  decoration: InputDecoration(
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.white),
-                                    ),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.black),
-                                    ),
-                                    labelStyle: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                    labelText: 'Username',
-                                  )),
-                              SizedBox(height: 10),
-                              const TextField(
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 24),
-                                  obscureText: true,
-                                  enableSuggestions: false,
-                                  autocorrect: false,
-                                  decoration: InputDecoration(
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.white),
-                                    ),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.black),
-                                    ),
-                                    labelStyle: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                    labelText: 'Password',
-                                  )),
-                              SizedBox(height: 10),
-                              const TextField(
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 24),
-                                  obscureText: true,
-                                  enableSuggestions: false,
-                                  autocorrect: false,
-                                  decoration: InputDecoration(
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.white),
-                                    ),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.black),
-                                    ),
-                                    labelStyle: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                    labelText: 'Confirm Password',
-                                  )),
-                              SizedBox(height: 10),
-                              FractionallySizedBox(
-                                  widthFactor: 1,
-                                  child: OutlinedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        accountFlag = true;
-                                      });
-                                    },
-                                    style: ButtonStyle(
-                                      foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.black),
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.white),
-                                      shape: MaterialStateProperty.all(
-                                          RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30.0))),
-                                    ),
-                                    child: const Text(
-                                      "Continue",
+                child: Center(
+                    child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 8,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Accounts",
+                                style: TextStyle(
+                                    fontSize: 32, color: Colors.white)),
+                            SizedBox(height: 40),
+                            FractionallySizedBox(
+                                widthFactor: 0.8,
+                                child: Column(
+                                  children: [
+                                    TextField(
                                       style: TextStyle(
-                                        fontSize: 15.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  )),
-                            ],
-                          )),
-                    ]),
-              ),
-            ],
-          ))
-        else if (accountFlag && !nameFlag)
-          Center(
-              child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                flex: 8,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("My name is",
-                          style: TextStyle(fontSize: 32, color: Colors.white)),
-                      SizedBox(height: 40),
-                      FractionallySizedBox(
-                          widthFactor: 0.8,
-                          child: Column(
-                            children: [
-                              const TextField(
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 24),
-                                  decoration: InputDecoration(
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.white),
-                                    ),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.black),
-                                    ),
-                                    labelStyle: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                    labelText: 'First Name',
-                                  )),
-                              SizedBox(height: 10),
-                              FractionallySizedBox(
-                                  widthFactor: 1,
-                                  child: OutlinedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        nameFlag = true;
-                                      });
-                                    },
-                                    style: ButtonStyle(
-                                      foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.black),
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.white),
-                                      shape: MaterialStateProperty.all(
-                                          RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30.0))),
-                                    ),
-                                    child: const Text(
-                                      "Continue",
-                                      style: TextStyle(
-                                        fontSize: 15.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  )),
-                            ],
-                          )),
-                    ]),
-              ),
-            ],
-          ))
-        else if (accountFlag && nameFlag && !birthdayFlag)
-          Center(
-              child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                flex: 8,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("My birthday is",
-                          style: TextStyle(fontSize: 32, color: Colors.white)),
-                      SizedBox(height: 40),
-                      FractionallySizedBox(
-                          widthFactor: 0.8,
-                          child: Column(
-                            children: [
-                              Container(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Center(
-                                      child: TextField(
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 24),
-                                    controller: dateController,
-                                    decoration: const InputDecoration(
-                                        icon: Icon(Icons.calendar_today),
+                                          color: Colors.white, fontSize: 24),
+                                      decoration: InputDecoration(
                                         enabledBorder: UnderlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: Colors.black),
-                                        ),
-                                        focusedBorder: UnderlineInputBorder(
                                           borderSide:
                                               BorderSide(color: Colors.white),
                                         ),
-                                        labelText: "Enter Date"),
-                                    readOnly: true,
-                                    onTap: () async {
-                                      DateTime? pickedDate =
-                                          await showDatePicker(
-                                        context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime(2000),
-                                        lastDate: DateTime(2101),
-                                      );
-                                      if (pickedDate != null) {
-                                        String formattedDate =
-                                            DateFormat("yyyy-MM-dd")
-                                                .format(pickedDate);
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black),
+                                        ),
+                                        labelStyle: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                        errorText: usernameError
+                                            ? "Please enter username"
+                                            : null,
+                                        labelText: 'Username',
+                                      ),
+                                      controller: usernameContoller,
+                                    ),
+                                    SizedBox(height: 10),
+                                    TextField(
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 24),
+                                      obscureText: true,
+                                      enableSuggestions: false,
+                                      autocorrect: false,
+                                      decoration: InputDecoration(
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.white),
+                                        ),
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black),
+                                        ),
+                                        labelStyle: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                        labelText: 'Password',
+                                        errorText: passwordError
+                                            ? "Please enter password"
+                                            : null,
+                                      ),
+                                      controller: passwordContoller,
+                                    ),
+                                    SizedBox(height: 10),
+                                    TextField(
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 24),
+                                      obscureText: true,
+                                      enableSuggestions: false,
+                                      autocorrect: false,
+                                      decoration: InputDecoration(
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.white),
+                                        ),
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black),
+                                        ),
+                                        labelStyle: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                        labelText: 'Confirm Password',
+                                        errorText: passwordCError
+                                            ? "Please enter username"
+                                            : null,
+                                      ),
+                                      controller: passwordCContoller,
+                                    ),
+                                    SizedBox(height: 10),
+                                    FractionallySizedBox(
+                                        widthFactor: 1,
+                                        child: OutlinedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              if (usernameContoller.text == "")
+                                                usernameError = true;
+                                              else
+                                                usernameError = false;
 
-                                        setState(() {
-                                          dateController.text =
-                                              formattedDate.toString();
-                                        });
-                                      } else {
-                                        print("Not selected");
-                                      }
-                                    },
-                                  ))),
-                              SizedBox(height: 10),
-                              FractionallySizedBox(
-                                  widthFactor: 1,
-                                  child: OutlinedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        birthdayFlag = true;
-                                      });
-                                    },
-                                    style: ButtonStyle(
-                                      foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.black),
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.white),
-                                      shape: MaterialStateProperty.all(
-                                          RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30.0))),
-                                    ),
-                                    child: const Text(
-                                      "Continue",
-                                      style: TextStyle(
-                                        fontSize: 15.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  )),
-                            ],
-                          )),
-                    ]),
-              ),
-            ],
-          ))
-        else if (accountFlag && nameFlag && birthdayFlag && !sexFlag)
-          Center(
-              child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
+                                              if (passwordContoller.text == "")
+                                                passwordError = true;
+                                              else
+                                                passwordError = false;
+
+                                              if (passwordCContoller.text == "")
+                                                passwordCError = true;
+                                              else
+                                                passwordCError = false;
+
+                                              if (!usernameError &&
+                                                  !passwordError &&
+                                                  !passwordCError)
+                                                accountFlag = true;
+                                            });
+                                          },
+                                          style: ButtonStyle(
+                                            foregroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.black),
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.white),
+                                            shape: MaterialStateProperty.all(
+                                                RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            30.0))),
+                                          ),
+                                          child: const Text(
+                                            "Continue",
+                                            style: TextStyle(
+                                              fontSize: 15.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        )),
+                                  ],
+                                )),
+                          ]),
+                    ),
+                  ],
+                )),
+              )
+            //name container
+            else if (accountFlag && !nameFlag)
               Expanded(
-                flex: 8,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("I am a",
-                          style: TextStyle(fontSize: 32, color: Colors.white)),
-                      SizedBox(height: 40),
-                      FractionallySizedBox(
-                          widthFactor: 0.8,
-                          child: Column(
-                            children: [
-                              FractionallySizedBox(
-                                  widthFactor: 1,
-                                  child: OutlinedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        sexChanged(true);
-                                      });
-                                    },
-                                    style: ButtonStyle(
-                                      foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.white),
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.transparent),
-                                      shape: MaterialStateProperty.all(
-                                          RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(30.0),
-                                      )),
-                                      side: MaterialStateProperty.all(
-                                          BorderSide(
-                                              width: 3,
-                                              color: isMale
-                                                  ? Colors.black
-                                                  : Colors.white)),
-                                    ),
-                                    child: const Text(
-                                      "Male",
+                child: Center(
+                    child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 8,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("My name is",
+                                style: TextStyle(
+                                    fontSize: 32, color: Colors.white)),
+                            SizedBox(height: 40),
+                            FractionallySizedBox(
+                                widthFactor: 0.8,
+                                child: Column(
+                                  children: [
+                                    TextField(
                                       style: TextStyle(
-                                        fontSize: 15.0,
-                                        fontWeight: FontWeight.bold,
+                                          color: Colors.white, fontSize: 24),
+                                      decoration: InputDecoration(
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.white),
+                                        ),
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black),
+                                        ),
+                                        labelStyle: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                        labelText: 'First Name',
+                                        errorText: nameError
+                                            ? "Please enter your name"
+                                            : null,
+                                      ),
+                                      controller: nameContoller,
+                                    ),
+                                    SizedBox(height: 10),
+                                    FractionallySizedBox(
+                                      widthFactor: 1,
+                                      child: OutlinedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            if (nameContoller.text == "") {
+                                              nameError = true;
+                                            } else {
+                                              nameError = false;
+                                              nameFlag = true;
+                                            }
+                                          });
+                                        },
+                                        style: ButtonStyle(
+                                          foregroundColor:
+                                              MaterialStateProperty.all(
+                                                  Colors.black),
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                                  Colors.white),
+                                          shape: MaterialStateProperty.all(
+                                              RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          30.0))),
+                                        ),
+                                        child: const Text(
+                                          "Continue",
+                                          style: TextStyle(
+                                            fontSize: 15.0,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  )),
-                              SizedBox(height: 10),
-                              FractionallySizedBox(
-                                  widthFactor: 1,
-                                  child: OutlinedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        sexChanged(false);
-                                      });
-                                    },
-                                    style: ButtonStyle(
-                                      foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.white),
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.transparent),
-                                      shape: MaterialStateProperty.all(
-                                          RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(30.0),
-                                      )),
-                                      side: MaterialStateProperty.all(
-                                          BorderSide(
-                                              width: 3,
-                                              color: isFemale
-                                                  ? Colors.black
-                                                  : Colors.white)),
-                                    ),
-                                    child: const Text(
-                                      "Female",
-                                      style: TextStyle(
-                                        fontSize: 15.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  )),
-                              SizedBox(height: 40),
-                              FractionallySizedBox(
-                                  widthFactor: 1,
-                                  child: OutlinedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        accountFlag = true;
-                                      });
-                                    },
-                                    style: ButtonStyle(
-                                      foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.black),
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.white),
-                                      shape: MaterialStateProperty.all(
-                                          RoundedRectangleBorder(
+                                  ],
+                                )),
+                          ]),
+                    ),
+                  ],
+                )),
+              )
+            //Birthday container
+            else if (accountFlag && nameFlag && !birthdayFlag)
+              Expanded(
+                child: Center(
+                    child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 8,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("My birthday is",
+                                style: TextStyle(
+                                    fontSize: 32, color: Colors.white)),
+                            SizedBox(height: 40),
+                            FractionallySizedBox(
+                                widthFactor: 0.8,
+                                child: Column(
+                                  children: [
+                                    Container(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Center(
+                                            child: TextField(
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 24),
+                                          controller: dateController,
+                                          decoration:  InputDecoration(
+                                              icon: Icon(Icons.calendar_today),
+                                              enabledBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.black),
+                                              ),
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.white),
+                                              ),
+                                              errorText: dateError
+                                              ? "Please choose your birthday"
+                                              : null,
+                                              labelText: "Enter Date"),
+
+                                          readOnly: true,
+                                          onTap: () async {
+                                            DateTime? pickedDate =
+                                                await showDatePicker(
+                                              context: context,
+                                              initialDate: DateTime.now(),
+                                              firstDate: DateTime(2000),
+                                              lastDate: DateTime(2101),
+                                            );
+                                            if (pickedDate != null) {
+                                              String formattedDate =
+                                                  DateFormat("yyyy-MM-dd")
+                                                      .format(pickedDate);
+
+                                              setState(() {
+                                                dateError = false;
+                                                dateController.text =
+                                                    formattedDate.toString();
+                                              });
+                                            } else {
+                                              print("Not selected");
+                                            }
+                                          },
+
+                                        ),
+                                        )),
+                                    SizedBox(height: 10),
+                                    FractionallySizedBox(
+                                        widthFactor: 1,
+                                        child: OutlinedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              if(dateController.text == "") {
+                                                dateError = true;
+                                              }
+                                              else {
+                                                dateError = false;
+                                                birthdayFlag = true;
+                                              }
+
+                                            });
+                                          },
+                                          style: ButtonStyle(
+                                            foregroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.black),
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.white),
+                                            shape: MaterialStateProperty.all(
+                                                RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            30.0))),
+                                          ),
+                                          child: const Text(
+                                            "Continue",
+                                            style: TextStyle(
+                                              fontSize: 15.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        )),
+                                  ],
+                                )),
+                          ]),
+                    ),
+                  ],
+                )),
+              )
+            // Gender container
+            else if (accountFlag && nameFlag && birthdayFlag && !sexFlag)
+              Expanded(
+                child: Center(
+                    child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 8,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("I am a",
+                                style: TextStyle(
+                                    fontSize: 32, color: Colors.white)),
+                            SizedBox(height: 40),
+                            FractionallySizedBox(
+                                widthFactor: 0.8,
+                                child: Column(
+                                  children: [
+                                    FractionallySizedBox(
+                                        widthFactor: 1,
+                                        child: OutlinedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              sexChanged(true);
+                                            });
+                                          },
+                                          style: ButtonStyle(
+                                            foregroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.white),
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.transparent),
+                                            shape: MaterialStateProperty.all(
+                                                RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(30.0))),
-                                    ),
-                                    child: const Text(
-                                      "Continue",
+                                                  BorderRadius.circular(30.0),
+                                            )),
+                                            side: MaterialStateProperty.all(
+                                                BorderSide(
+                                                    width: 3,
+                                                    color: isMale
+                                                        ? Colors.black
+                                                        : Colors.white)),
+                                          ),
+                                          child: const Text(
+                                            "Male",
+                                            style: TextStyle(
+                                              fontSize: 15.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        )),
+                                    SizedBox(height: 10),
+                                    FractionallySizedBox(
+                                        widthFactor: 1,
+                                        child: OutlinedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              sexChanged(false);
+                                            });
+                                          },
+                                          style: ButtonStyle(
+                                            foregroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.white),
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.transparent),
+                                            shape: MaterialStateProperty.all(
+                                                RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30.0),
+                                            )),
+                                            side: MaterialStateProperty.all(
+                                                BorderSide(
+                                                    width: 3,
+                                                    color: isFemale
+                                                        ? Colors.black
+                                                        : Colors.white)),
+                                          ),
+                                          child: const Text(
+                                            "Female",
+                                            style: TextStyle(
+                                              fontSize: 15.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        )),
+                                  if(sexError)
+                                  FractionallySizedBox(
+                                    widthFactor: 1,
+                                    child: Text(
+                                      "Please choose one",
+                                      textAlign: TextAlign.left,
                                       style: TextStyle(
-                                        fontSize: 15.0,
+                                        fontSize: 12.0,
                                         fontWeight: FontWeight.bold,
+                                        color: Colors.red
                                       ),
                                     ),
-                                  )),
-                            ],
-                          )),
-                    ]),
+                                  ),
+                                    SizedBox(height: 40),
+                                    FractionallySizedBox(
+                                        widthFactor: 1,
+                                        child: OutlinedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              if(isMale || isFemale) {
+                                                sexError = false;
+                                                sexFlag = true;
+                                              }
+                                              else sexError = true;
+                                            });
+                                          },
+                                          style: ButtonStyle(
+                                            foregroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.black),
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.white),
+                                            shape: MaterialStateProperty.all(
+                                                RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            30.0))),
+                                          ),
+                                          child: const Text(
+                                            "Continue",
+                                            style: TextStyle(
+                                              fontSize: 15.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        )),
+                                  ],
+                                )),
+                          ]),
+                    ),
+                  ],
+                )),
+              )
+            else if (accountFlag &&
+                nameFlag &&
+                birthdayFlag &&
+                sexFlag &&
+                !picFlag)
+              Expanded(
+                child: Center(
+                    child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 8,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Profile photo",
+                                style: TextStyle(
+                                    fontSize: 32, color: Colors.white)),
+                            const SizedBox(height: 40),
+                            FractionallySizedBox(
+                                widthFactor: 0.8,
+                                child: Column(children: [
+                                  if (!isChoose)
+                                    FractionallySizedBox(
+                                      widthFactor: 1,
+                                      child: IconButton(
+                                        icon: Image.asset(
+                                            'assets/images/PicIcon.png'),
+                                        iconSize: 250,
+                                        onPressed: () {
+                                          pickImage();
+                                        },
+                                      ),
+                                    )
+                                  else
+                                    FractionallySizedBox(
+                                        widthFactor: 1,
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.red,
+                                          radius: 250,
+                                          child: CircleAvatar(
+                                            radius: 250 - 5,
+                                            backgroundImage: Image.file(
+                                              imageTemp,
+                                              fit: BoxFit.cover,
+                                            ).image,
+                                          ),
+                                        )),
+                                  if(picError)
+                                    FractionallySizedBox(
+                                      widthFactor: 1,
+                                      child: Text(
+                                        "Please choose a profile picture",
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.red
+                                        ),
+                                      ),
+                                    ),
+                                  const SizedBox(height: 40),
+                                  FractionallySizedBox(
+                                      widthFactor: 1,
+                                      child: OutlinedButton(
+                                        onPressed: () async {
+                                          setState(() {
+                                            if(!isChoose) picError = true;
+                                            else {
+                                              sexFlag = true;
+                                            }
+                                          } );
+                                          if(isChoose)
+                                          {
+                                            developer.log("Copying image");
+                                            String? path;
+                                            var _appDocumentsDirectory = await getApplicationDocumentsDirectory();
+                                          path = _appDocumentsDirectory.path;
+
+                                          final String fileName = basename(imagePath); // Filename without extension
+
+                                          imageTemp = await imageTemp.copy('$path/$fileName');
+
+                                          developer.log(usernameContoller.text + passwordContoller.text + nameContoller.text + dateController.text + isMale.toString() + imageTemp.path);
+                                        }
+                                        },
+                                        style: ButtonStyle(
+                                          foregroundColor:
+                                              MaterialStateProperty.all(
+                                                  Colors.black),
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                                  Colors.white),
+                                          shape: MaterialStateProperty.all(
+                                              RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          30.0))),
+                                        ),
+                                        child: const Text(
+                                          "Continue",
+                                          style: TextStyle(
+                                            fontSize: 15.0,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ))
+                                ])),
+                          ]),
+                    ),
+                  ],
+                )),
               ),
-            ],
-          )),
+          ],
+        ),
+        //Progress bar
         Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.end,
