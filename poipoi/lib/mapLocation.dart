@@ -28,38 +28,38 @@ class _HomeState extends State<Home> {
       bearing: 0
   );
 
-  List<Map> pokemon = [
-    {
-      "id": 1,
-      "name": "Bulbasaur",
-      "level": 1,
-    },
-    {
-      "id": 2,
-      "name": "Charmander",
-      "level": 1,
-    },
-    {
-      "id": 3,
-      "name": "Squirtle",
-      "level": 1,
-    },
-    {
-      "id": 4,
-      "name": "Ivysaur",
-      "level": 1,
-    },
-    {
-      "id": 5,
-      "name": "Charmeleon",
-      "level": 1,
-    },
-    {
-      "id": 6,
-      "name": "Wartortle",
-      "level": 1,
-    },
-  ];
+  // List<Map> pokemon = [
+  //   {
+  //     "id": 1,
+  //     "name": "Bulbasaur",
+  //     "level": 1,
+  //   },
+  //   {
+  //     "id": 2,
+  //     "name": "Charmander",
+  //     "level": 1,
+  //   },
+  //   {
+  //     "id": 3,
+  //     "name": "Squirtle",
+  //     "level": 1,
+  //   },
+  //   {
+  //     "id": 4,
+  //     "name": "Ivysaur",
+  //     "level": 1,
+  //   },
+  //   {
+  //     "id": 5,
+  //     "name": "Charmeleon",
+  //     "level": 1,
+  //   },
+  //   {
+  //     "id": 6,
+  //     "name": "Wartortle",
+  //     "level": 1,
+  //   },
+  // ];
 
   int _index = 0;
   bool showLocation = true;
@@ -138,13 +138,15 @@ class _HomeState extends State<Home> {
                       flex: 1,
                       child: Row(
                         children: [
-                          Align(
-                            alignment: Alignment.centerLeft, // Reset level
+                          Expanded(
+                            child: Container(),
+                          ),
+                          Expanded(
                             child: ElevatedButton(
                               onPressed: () {
                                 setState(() {
-                                  for (int i = 0; i < pokemon.length; i++) {
-                                    pokemon[i]['level'] = 1;
+                                  for (int i = 0; i < Coordinates().pokemon.length; i++) {
+                                    Coordinates().pokemon[i]['level'] = 1;
                                   }
                                 });
                               },
@@ -155,8 +157,7 @@ class _HomeState extends State<Home> {
                               child: const Icon(Icons.lock_reset_rounded),
                             ),
                           ),
-                          Align(
-                            alignment: Alignment.centerRight, // Show Location
+                          Expanded(
                             child: ElevatedButton(
                               onPressed: () {
                                 setState(()
@@ -170,6 +171,9 @@ class _HomeState extends State<Home> {
                               ),
                               child: const Icon(Icons.account_circle, color: Colors.black),
                             ),
+                          ),
+                          Expanded(
+                            child: Container(),
                           ),
                         ],
                       ),
@@ -238,7 +242,7 @@ class _HomeState extends State<Home> {
   List<Card> PokemonLevel(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     List<Card> locations = [
-      for (int i = 0; i < pokemon.length; i++)
+      for (int i = 0; i < Coordinates().pokemon.length; i++)
         Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15.0),
@@ -251,7 +255,7 @@ class _HomeState extends State<Home> {
               children: [
                 Expanded(
                   flex: 4,
-                  child: Image.asset('assets/${pokemon[i]['name']}.jpg'),
+                  child: Image.asset('assets/${Coordinates().pokemon[i]['name']}.jpg'),
                   // child: CircleAvatar(
                   //   backgroundImage: AssetImage('assets/Bulbasaur.jpg'),
                   //   radius: 80.0,
@@ -270,11 +274,11 @@ class _HomeState extends State<Home> {
                         ),
                         onPressed: () {
                           setState(() {
-                            pokemon[i]['level']++;
+                            Coordinates().pokemon[i]['level']++;
                           });
                         },
                         child: Text(
-                          '${pokemon[i]['name']}: ${pokemon[i]['level']}',
+                          '${Coordinates().pokemon[i]['name']}: ${Coordinates().pokemon[i]['level']}',
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 15.0,
