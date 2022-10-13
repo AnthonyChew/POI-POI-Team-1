@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:developer';
 
 class Coordinates {
   List<Map> pokemon = [
+    {
+      "id": '0',
+      "name": "My location",
+      "level": 1,
+      "latlong" : const LatLng(1.385000, 103.745000),
+      "info": const InfoWindow(
+        title: "My Location",
+        // snippet: '5 Star Rating',
+      )
+    },
     {
       "id": '1',
       "name": "Bulbasaur",
@@ -104,12 +115,18 @@ class Coordinates {
           snippet: '5 Star Rating',
         )
     ),
-    for (int i = 0; i < pokemon.length; i++)
-      Marker(
-          markerId: MarkerId(pokemon[i]['id'].toString()),
-          position: pokemon[i]['latlong'],
-          infoWindow: pokemon[i]['info']
-      )
+    for (int i = 1; i < pokemon.length; i++)
+      if (
+      (pokemon[0]['latlong'].latitude - pokemon[i]['latlong'].latitude) < 0.003 &&
+          (pokemon[0]['latlong'].latitude - pokemon[i]['latlong'].latitude) > -0.003 &&
+          (pokemon[0]['latlong'].longitude - pokemon[i]['latlong'].longitude) < 0.003 &&
+          (pokemon[0]['latlong'].longitude - pokemon[i]['latlong'].longitude) > -0.003
+      ) // set at 0.003 as 0.003 is apparently roughly 100m++
+        Marker(
+            markerId: MarkerId(pokemon[i]['id'].toString()),
+            position: pokemon[i]['latlong'],
+            infoWindow: pokemon[i]['info']
+        )
     // const Marker(
     //   markerId: MarkerId('1'),
     //   position: LatLng(1.383500, 103.744000),
@@ -136,5 +153,13 @@ class Coordinates {
     // ),
   ];
 
+  void lvlup(int i) {
+    pokemon[i].update('level', (value) => value + 1);
+  }
 
+  void reset() {
+    for (int i = 1; i < pokemon.length; i++) {
+      pokemon[i].updateAll((key, value) => 1);
+    }
+  }
 }

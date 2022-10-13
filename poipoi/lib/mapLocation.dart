@@ -5,6 +5,35 @@ import 'coordinates.dart';
 // import 'avatars.dart';
 // import 'pokemonLevels.dart';
 
+// READ ME FIRST
+// To run this file, first gotta set up google maps properly.
+
+// Step 1: open android/app/src/main/AndroidManifest.xml
+// add the following lines above the <application  tag with the same indentation
+// <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+// <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+// next, add the following above the <activity tag
+// <meta-data android:name="com.google.android.geo.API_KEY"
+//    android:value="<-- insert API Key here, get from Hao Yi -->"/>
+
+// Step 2: Open  android/app/build.gradle
+// change the following lines:
+// under
+// Android {
+//    defaultConfig {
+//        minSdkVersion flutter.minSdkVersion     -> change it to minSdkVersion 20
+
+// Step 3: Open pubspec.yaml
+// under the dependencies:
+// add google_maps_flutter: ^2.0.1 below flutter: sdk: flutter
+// it should look like
+// dependencies:
+//   flutter:
+//      sdk: flutter
+//   google_maps_flutter: ^2.0.1
+
+
+
 void main() {
   runApp(const MaterialApp(
     home: Home(),
@@ -240,9 +269,11 @@ class _HomeState extends State<Home> {
   }
 
   List<Card> PokemonLevel(BuildContext context) {
+    int i = 0;
+    int level = Coordinates().pokemon[i]['level'];
     double screenWidth = MediaQuery.of(context).size.width;
     List<Card> locations = [
-      for (int i = 0; i < Coordinates().pokemon.length; i++)
+      for (i = 1; i < Coordinates().pokemon.length; i++)
         Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15.0),
@@ -274,11 +305,13 @@ class _HomeState extends State<Home> {
                         ),
                         onPressed: () {
                           setState(() {
-                            Coordinates().pokemon[i]['level']++;
+                            // Coordinates().pokemon[i]['level']++;
+                            Coordinates().lvlup(i);
+                            print("level: ${Coordinates().pokemon[i]['level']}");
                           });
                         },
                         child: Text(
-                          '${Coordinates().pokemon[i]['name']}: ${Coordinates().pokemon[i]['level']}',
+                          '${Coordinates().pokemon[i]['name']}: $level',
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 15.0,
@@ -512,5 +545,174 @@ class _HomeState extends State<Home> {
       // ),
     ];
     return locations;
+  }
+
+  List<Card> defAvatar(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    List<Card> avatars = [
+      for (int i = 1; i < Coordinates().pokemon.length; i++)
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          color: Colors.white54,
+          elevation: 10,
+          child: Container(
+            width: screenWidth * 0.312,
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage('assets/${Coordinates().pokemon[i]['name']}.jpg'),
+                    radius: 80.0,
+                    backgroundColor: Colors.black,
+                  ),
+                ),
+                Expanded(
+                    flex: 1,
+                    child: Container(
+                      color: Colors.red[0],
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange[i * 100 + 100],
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 1.0, horizontal: 1.0),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            Coordinates().pokemon[i]['level']++;
+                          });
+                        },
+                        child: Text(
+                          '${Coordinates().pokemon[i]['name']}: ${Coordinates().pokemon[i]['level']}',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 15.0,
+                            letterSpacing: 1.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    )
+                ),
+              ],
+            ),
+          ),
+        ),
+      // Container(
+      //   child: Column(
+      //     children: [
+      //       Expanded(
+      //         flex: 1,
+      //         child: CircleAvatar(
+      //           backgroundImage: AssetImage('assets/Charmander.jpg'),
+      //           radius: 80.0,
+      //           backgroundColor: Colors.black,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      // Container(
+      //   child: Column(
+      //     children: [
+      //       Expanded(
+      //         flex: 1,
+      //         child: CircleAvatar(
+      //           backgroundImage: AssetImage('assets/Squirtle.jpg'),
+      //           radius: 80.0,
+      //           backgroundColor: Colors.black,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      // Container(
+      //   child: Column(
+      //     children: [
+      //       Expanded(
+      //         flex: 1,
+      //         child: CircleAvatar(
+      //           backgroundImage: AssetImage('assets/Ivysaur.jpg'),
+      //           radius: 80.0,
+      //           backgroundColor: Colors.black,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      // Container(
+      //   child: Column(
+      //     children: [
+      //       Expanded(
+      //         flex: 1,
+      //         child: CircleAvatar(
+      //           backgroundImage: AssetImage('assets/Charmeleon.jpg'),
+      //           radius: 80.0,
+      //           backgroundColor: Colors.black,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      // Container(
+      //   child: Column(
+      //     children: [
+      //       Expanded(
+      //         flex: 1,
+      //         child: CircleAvatar(
+      //           backgroundImage: AssetImage('assets/Wartortle.jpg'),
+      //           radius: 80.0,
+      //           backgroundColor: Colors.black,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      // Container(
+      //   child: Column(
+      //     children: [
+      //       Expanded(
+      //         flex: 1,
+      //         child: CircleAvatar(
+      //           backgroundImage: AssetImage('assets/Venusaur.jpg'),
+      //           radius: 80.0,
+      //           backgroundColor: Colors.black,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      // Container(
+      //   child: Column(
+      //     children: [
+      //       Expanded(
+      //         flex: 1,
+      //         child: CircleAvatar(
+      //           backgroundImage: AssetImage('assets/Charizard.jpg'),
+      //           radius: 80.0,
+      //           backgroundColor: Colors.black,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      // Container(
+      //   child: Column(
+      //     children: [
+      //       Expanded(
+      //         flex: 1,
+      //         child: CircleAvatar(
+      //           backgroundImage: AssetImage('assets/Blastoise.jpg'),
+      //           radius: 80.0,
+      //           backgroundColor: Colors.black,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+    ];
+    return avatars;
   }
 }
