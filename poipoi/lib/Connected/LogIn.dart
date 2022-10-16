@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
         new signUp.SignUpPage(title: 'Sign Up'),
         //add more routes here
         "/mainScreen": (BuildContext context) =>
-        new mainScreen.MainScreen(title: 'Main Screen'),
+        new mainScreen.Navigation(title: 'Navigate'),
       },
     );
   }

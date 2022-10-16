@@ -6,11 +6,12 @@ Still need to figure out how users gonna interact with the posts
  */
 
 import 'package:flutter/material.dart';
-import '../post.dart';
+import 'Post.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
+
 
 
 
@@ -23,23 +24,25 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final RoundedLoadingButtonController _btnController1 = RoundedLoadingButtonController();
-
   void _doSomething(RoundedLoadingButtonController controller) async {
     Timer(Duration(seconds: 10), () {
       controller.success();
     });
   }
 
-
   //hardcode.. need to edit later on..
   //gets a list of posts
   List<Post> posts = [
-    Post(title: 'Punggol Park', description: 'Fun day at the park!!', username: 'Peter', imageURL: ['assets/images/pp1.JPG', 'assets/images/pp2.jpg', 'assets/images/pp1.JPG'] ),
+    Post(title: 'Punggol Park', imageURL: ['assets/images/pp1.JPG', 'assets/images/pp2.jpg', 'assets/images/pp1.JPG'] ),
 
-    Post(title: 'Woodlands Park', description: 'Fun day at the park!!', username: 'Peter', imageURL: ['assets/images/pp1.JPG', 'assets/images/pp2.jpg'] ),
+    Post(title: 'Woodlands Park', imageURL: ['assets/images/pp1.JPG', 'assets/images/pp2.jpg'] ),
   ];
 
-
+_commentButtonPressed(int index){
+  setState(() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => posts[index].page));
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -82,16 +85,7 @@ class _HomePageState extends State<HomePage> {
                                   posts[index].title,
                                   style: TextStyle(fontSize:20.0, fontFamily: 'NotoSans', fontWeight: FontWeight.bold,),
                                 ),
-                                Text(
-                                  'Posted by ${posts[index].username}',
-                                  style: TextStyle(fontSize: 10.0, fontFamily: 'NotoSans',),
-                                ),
-                                Text(
-                                  posts[index]. description,
-                                  style: TextStyle(fontSize:12.0, fontFamily: 'NotoSans', letterSpacing:2.0, ),
-                                  textAlign: TextAlign.end,
 
-                                ),
                               ],
                             ),
 
@@ -116,26 +110,47 @@ class _HomePageState extends State<HomePage> {
                                 ),
 
                             ),),
-                            Container(
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
 
-                              padding: const EdgeInsets.fromLTRB(2.0,10.0,250.0,10.0),
-                              child: RoundedLoadingButton(
-                                controller:_btnController1,
-                                successIcon: Icons.pin_drop,
-                                failedIcon: Icons.wrong_location,
+                                  padding: const EdgeInsets.fromLTRB(5.0,10.0,20.0,10.0),
+                                  child: RoundedLoadingButton(
+                                    width: 50.0,
+                                    controller:_btnController1,
+                                    successIcon: Icons.pin_drop,
+                                    failedIcon: Icons.wrong_location,
 
-                                child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(10.0,2.0,5.0,2.0),
-                                  child: Row(
-                                      children: [
-                                        Icon( Icons.directions),
-                                        Text('Get Directions!', style: TextStyle(color: Colors.white)),
-                                      ]
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(10.0,2.0,5.0,2.0),
+                                      child: Row(
+                                          children: [
+                                            Icon( Icons.directions),
+                                            Text('Directions!', style: TextStyle(color: Colors.white)),
+                                          ]
+                                      ),
+                                    ),
+
+                                    onPressed: () => _doSomething(_btnController1),
                                   ),
                                 ),
 
-                                onPressed: () => _doSomething(_btnController1),
-                              ),
+                                Container(
+                                  padding: EdgeInsets.only(right:5.0),
+                                  child: IconButton(
+                                      iconSize : 40.0,
+                                      onPressed: () {
+                                        setState(() {
+                                          posts[index].setClick(true);
+                                          _commentButtonPressed(index);
+                                        });
+                                      },
+                                      color: Colors.blue,
+                                      icon: Icon( Icons.chat_bubble_outline_rounded ),
+                                ),
+                                ),
+                              ],
                             ),
 
 

@@ -30,7 +30,7 @@ class _FavouritePageState extends State<FavouritePage> {
     return MaterialApp(
         routes:
         {
-        '/': (context) => FavouritePage(),
+      //  '/': (context) => FavouritePage(),
         '/filter': (context) => Filter(),
         '/history': (context) => History(),
         },
