@@ -11,8 +11,3 @@ class Post {
 
   void setClick(bool press){ click = press;}
 }
-
-
-
-
-
