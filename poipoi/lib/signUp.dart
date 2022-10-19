@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:developer' as developer;
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:poipoi/GlobalData.dart' as global;
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key, required this.title});
@@ -29,7 +31,6 @@ class SignUpPage extends StatefulWidget {
 }
 
 class signUp extends State<SignUpPage> {
-
   bool accountFlag = false,
       nameFlag = false,
       birthdayFlag = false,
@@ -39,14 +40,14 @@ class signUp extends State<SignUpPage> {
       isFemale = false,
       isChoose = false;
 
-  bool usernameError = false,
+  bool emailError = false,
       passwordError = false,
       passwordCError = false,
       nameError = false,
       dateError = false,
       sexError = false,
       picError = false;
-  String username = "", password = "";
+  String emailErrorText = "", passwordErrorText = "", passwordCErrorText = "";
 
   File? image;
 
@@ -55,7 +56,7 @@ class signUp extends State<SignUpPage> {
 
   TextEditingController dateController = TextEditingController();
 
-  final usernameContoller = TextEditingController();
+  final emailController = TextEditingController();
   final passwordContoller = TextEditingController();
   final passwordCContoller = TextEditingController();
   final nameContoller = TextEditingController();
@@ -82,12 +83,17 @@ class signUp extends State<SignUpPage> {
       if (image != null) {
         imageTemp = File(image.path);
         imagePath = image.path;
-        setState(() {isChoose = true; picError = false;});
+        setState(() {
+          isChoose = true;
+          picError = false;
+        });
       }
     } on PlatformException catch (e) {
       print('Failed to pick image: $e');
     }
   }
+
+  void regsiter() {}
 
   @override
   Widget build(BuildContext context) {
@@ -147,12 +153,11 @@ class signUp extends State<SignUpPage> {
                                         labelStyle: TextStyle(
                                           color: Colors.white,
                                         ),
-                                        errorText: usernameError
-                                            ? "Please enter username"
-                                            : null,
-                                        labelText: 'Username',
+                                        errorText:
+                                            emailError ? emailErrorText : null,
+                                        labelText: 'Email',
                                       ),
-                                      controller: usernameContoller,
+                                      controller: emailController,
                                     ),
                                     SizedBox(height: 10),
                                     TextField(
@@ -175,7 +180,7 @@ class signUp extends State<SignUpPage> {
                                         ),
                                         labelText: 'Password',
                                         errorText: passwordError
-                                            ? "Please enter password"
+                                            ? passwordErrorText
                                             : null,
                                       ),
                                       controller: passwordContoller,
@@ -201,7 +206,7 @@ class signUp extends State<SignUpPage> {
                                         ),
                                         labelText: 'Confirm Password',
                                         errorText: passwordCError
-                                            ? "Please enter username"
+                                            ? passwordCErrorText
                                             : null,
                                       ),
                                       controller: passwordCContoller,
@@ -210,28 +215,51 @@ class signUp extends State<SignUpPage> {
                                     FractionallySizedBox(
                                         widthFactor: 1,
                                         child: OutlinedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              if (usernameContoller.text == "")
-                                                usernameError = true;
-                                              else
-                                                usernameError = false;
+                                          onPressed: ()  {
+                                            setState(()  {
+                                              if (emailController.text == "") {
+                                                emailErrorText = "Please enter email";
+                                                emailError = true;
+                                              } else
+                                                emailError = false;
 
-                                              if (passwordContoller.text == "")
+                                              if (passwordContoller.text =="") {
+                                                passwordErrorText = "Please enter password";
                                                 passwordError = true;
-                                              else
+                                              } else
                                                 passwordError = false;
 
-                                              if (passwordCContoller.text == "")
+                                              if (passwordCContoller.text == "") {
+                                                passwordCErrorText ="Please enter confirm email";
                                                 passwordCError = true;
-                                              else
+                                              } else
                                                 passwordCError = false;
 
-                                              if (!usernameError &&
-                                                  !passwordError &&
-                                                  !passwordCError)
-                                                accountFlag = true;
+                                              if (!emailError &&!passwordError &&  !passwordCError)
+                                              {
+
+                                                try {
+                                                  Future<UserCredential> userCredential = global.auth.createUserWithEmailAndPassword(
+                                                      email: emailController.text,
+                                                      password: passwordContoller.text);
+                                                    accountFlag = true;
+                                                } on FirebaseAuthException catch (e) {
+                                                  if (e.code =='weak-password') {
+                                                    passwordErrorText = 'The password provided is too weak.';
+                                                    passwordError = true;
+                                                  } else if (e.code =='email-already-in-use') {
+                                                    emailErrorText = 'The account already exists for that email.';
+                                                    emailError = true;
+                                                  }
+                                                } catch (e) {
+                                                 print(e);
+                                                  emailError = true;
+                                                }
+
+                                              }
                                             });
+
+
                                           },
                                           style: ButtonStyle(
                                             foregroundColor:
@@ -375,53 +403,52 @@ class signUp extends State<SignUpPage> {
                                     Container(
                                         padding: const EdgeInsets.all(10),
                                         child: Center(
-                                            child: TextField(
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 24),
-                                          controller: dateController,
-                                          decoration:  InputDecoration(
-                                              icon: Icon(Icons.calendar_today),
-                                              enabledBorder:
-                                                  UnderlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.black),
-                                              ),
-                                              focusedBorder:
-                                                  UnderlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white),
-                                              ),
-                                              errorText: dateError
-                                              ? "Please choose your birthday"
-                                              : null,
-                                              labelText: "Enter Date"),
+                                          child: TextField(
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 24),
+                                            controller: dateController,
+                                            decoration: InputDecoration(
+                                                icon:
+                                                    Icon(Icons.calendar_today),
+                                                enabledBorder:
+                                                    UnderlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color: Colors.black),
+                                                ),
+                                                focusedBorder:
+                                                    UnderlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color: Colors.white),
+                                                ),
+                                                errorText: dateError
+                                                    ? "Please choose your birthday"
+                                                    : null,
+                                                labelText: "Enter Date"),
+                                            readOnly: true,
+                                            onTap: () async {
+                                              DateTime? pickedDate =
+                                                  await showDatePicker(
+                                                context: context,
+                                                initialDate: DateTime.now(),
+                                                firstDate: DateTime(2000),
+                                                lastDate: DateTime(2101),
+                                              );
+                                              if (pickedDate != null) {
+                                                String formattedDate =
+                                                    DateFormat("yyyy-MM-dd")
+                                                        .format(pickedDate);
 
-                                          readOnly: true,
-                                          onTap: () async {
-                                            DateTime? pickedDate =
-                                                await showDatePicker(
-                                              context: context,
-                                              initialDate: DateTime.now(),
-                                              firstDate: DateTime(2000),
-                                              lastDate: DateTime(2101),
-                                            );
-                                            if (pickedDate != null) {
-                                              String formattedDate =
-                                                  DateFormat("yyyy-MM-dd")
-                                                      .format(pickedDate);
-
-                                              setState(() {
-                                                dateError = false;
-                                                dateController.text =
-                                                    formattedDate.toString();
-                                              });
-                                            } else {
-                                              print("Not selected");
-                                            }
-                                          },
-
-                                        ),
+                                                setState(() {
+                                                  dateError = false;
+                                                  dateController.text =
+                                                      formattedDate.toString();
+                                                });
+                                              } else {
+                                                print("Not selected");
+                                              }
+                                            },
+                                          ),
                                         )),
                                     SizedBox(height: 10),
                                     FractionallySizedBox(
@@ -429,14 +456,12 @@ class signUp extends State<SignUpPage> {
                                         child: OutlinedButton(
                                           onPressed: () {
                                             setState(() {
-                                              if(dateController.text == "") {
+                                              if (dateController.text == "") {
                                                 dateError = true;
-                                              }
-                                              else {
+                                              } else {
                                                 dateError = false;
                                                 birthdayFlag = true;
                                               }
-
                                             });
                                           },
                                           style: ButtonStyle(
@@ -561,30 +586,29 @@ class signUp extends State<SignUpPage> {
                                             ),
                                           ),
                                         )),
-                                  if(sexError)
-                                  FractionallySizedBox(
-                                    widthFactor: 1,
-                                    child: Text(
-                                      "Please choose one",
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(
-                                        fontSize: 12.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.red
+                                    if (sexError)
+                                      FractionallySizedBox(
+                                        widthFactor: 1,
+                                        child: Text(
+                                          "Please choose one",
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.red),
+                                        ),
                                       ),
-                                    ),
-                                  ),
                                     SizedBox(height: 40),
                                     FractionallySizedBox(
                                         widthFactor: 1,
                                         child: OutlinedButton(
                                           onPressed: () {
                                             setState(() {
-                                              if(isMale || isFemale) {
+                                              if (isMale || isFemale) {
                                                 sexError = false;
                                                 sexFlag = true;
-                                              }
-                                              else sexError = true;
+                                              } else
+                                                sexError = true;
                                             });
                                           },
                                           style: ButtonStyle(
@@ -666,7 +690,7 @@ class signUp extends State<SignUpPage> {
                                             ).image,
                                           ),
                                         )),
-                                  if(picError)
+                                  if (picError)
                                     FractionallySizedBox(
                                       widthFactor: 1,
                                       child: Text(
@@ -675,8 +699,7 @@ class signUp extends State<SignUpPage> {
                                         style: TextStyle(
                                             fontSize: 12.0,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.red
-                                        ),
+                                            color: Colors.red),
                                       ),
                                     ),
                                   const SizedBox(height: 40),
@@ -685,24 +708,43 @@ class signUp extends State<SignUpPage> {
                                       child: OutlinedButton(
                                         onPressed: () async {
                                           setState(() {
-                                            if(!isChoose) picError = true;
+                                            if (!isChoose)
+                                              picError = true;
                                             else {
                                               sexFlag = true;
                                             }
-                                          } );
-                                          if(isChoose)
-                                          {
+                                          });
+                                          if (isChoose) {
                                             developer.log("Copying image");
                                             String? path;
                                             var _appDocumentsDirectory = await getApplicationDocumentsDirectory();
-                                          path = _appDocumentsDirectory.path;
+                                            path = _appDocumentsDirectory.path;
 
-                                          final String fileName = basename(imagePath); // Filename without extension
+                                            final String fileName = basename(
+                                                imagePath); // Filename without extension
 
-                                          imageTemp = await imageTemp.copy('$path/$fileName');
+                                            imageTemp = await imageTemp
+                                                .copy('$path/$fileName');
 
-                                          developer.log(usernameContoller.text + passwordContoller.text + nameContoller.text + dateController.text + isMale.toString() + imageTemp.path);
-                                        }
+                                            global.uuid = FirebaseAuth.instance.currentUser?.uid;
+
+                                            final docUser = FirebaseFirestore
+                                                .instance
+                                                .collection("user_data")
+                                                .doc(FirebaseAuth.instance.currentUser?.uid);
+
+                                            await docUser.set({
+                                              'name': nameContoller.text,
+                                              'birthday': dateController.text,
+                                              'is_male': isMale,
+                                              'profile_pic_path': imageTemp.path
+                                            });
+
+                                            Navigator.pushNamed(
+                                              context,
+                                              '/mainScreen',
+                                            );
+                                          }
                                         },
                                         style: ButtonStyle(
                                           foregroundColor:

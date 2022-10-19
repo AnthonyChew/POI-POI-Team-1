@@ -1,13 +1,20 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:poipoi/signUp.dart' as signUp;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:poipoi/GlobalData.dart' as global;
+import 'Navigator.dart' as mainScreen;
 
 void main() {
   runApp(const MyApp());
+  Firebase.initializeApp();
+
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
 
   // This widget is the root of your application.
   @override
@@ -21,7 +28,9 @@ class MyApp extends StatelessWidget {
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
       routes: <String, WidgetBuilder>{
         "/signup": (BuildContext context) =>
-            new signUp.SignUpPage(title: 'Sign Up'),
+            signUp.SignUpPage(title: 'Sign Up'),
+        "/mainScreen": (BuildContext context) =>
+            mainScreen.MainScreen(title: 'Main Screen'),
         //add more routes here
       },
     );
@@ -46,9 +55,12 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-bool isEmail = false;
-
 class _MyHomePageState extends State<MyHomePage> {
+
+  bool isEmailError = false , isPasswordError = false;
+  final emailController = TextEditingController();
+  final passwordContoller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
 
@@ -81,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Spacer(flex: 4),
+            Spacer(flex: 2),
             Expanded(
               flex: 8,
               child: Column(
@@ -92,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         widthFactor: 0.8,
                         child: Column(
                           children: [
-                            const TextField(
+                             TextField(
                                 style: TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                     enabledBorder: OutlineInputBorder(
@@ -104,9 +116,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                     labelStyle: TextStyle(
                                       color: Colors.white, //<-- SEE HERE
                                     ),
-                                    labelText: 'Username')),
+                                    labelText: 'Email',
+                                    errorText: isEmailError
+                                      ? "Email not found."
+                                      : null,),
+                               controller: emailController,
+                             ),
                             SizedBox(height: 10),
-                            const TextField(
+                            TextField(
                                 style: TextStyle(color: Colors.white),
                                 obscureText: true,
                                 enableSuggestions: false,
@@ -122,12 +139,42 @@ class _MyHomePageState extends State<MyHomePage> {
                                     color: Colors.white,
                                   ),
                                   labelText: 'Password',
-                                )),
+                                  errorText: isPasswordError
+                                    ? "Wrong password."
+                                    : null,
+                                ),
+                              controller: passwordContoller,
+                            ),
                             SizedBox(height: 10),
                             FractionallySizedBox(
                                 widthFactor: 1,
                                 child: OutlinedButton(
-                                  onPressed: () {},
+                                  onPressed: ()  {
+                                    try {
+                                      Future<UserCredential> userCredential =  global.auth.signInWithEmailAndPassword(
+                                          email: emailController.text,
+                                          password: passwordContoller.text
+                                      )  ;
+
+                                      global.uuid = FirebaseAuth.instance.currentUser?.uid;
+
+                                      Navigator.pushNamed(
+                                        context,
+                                        '/mainScreen',
+                                      );
+                                    } on FirebaseAuthException catch (e) {
+                                      if (e.code == 'user-not-found') {
+                                        setState(()  {
+                                          isEmailError = true;
+                                        });
+                                      }
+                                      if (e.code == 'wrong-password') {
+                                        setState(()  {
+                                          isPasswordError = true;
+                                        });
+                                      }
+                                    }
+                                  },
                                   style: ButtonStyle(
                                     foregroundColor:
                                         MaterialStateProperty.all(Colors.black),
@@ -145,7 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                )),
+                                ),),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [

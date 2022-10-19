@@ -9,22 +9,8 @@ But within tabs can make it disappear by using push.Navigator() (see Screen2) if
 import 'package:flutter/material.dart';
 import 'HomePage.dart';
 import 'FindBuddyPage.dart';
-import 'AroundMePage.dart';
+import 'mapLocation.dart';
 import 'FavouritePage.dart';
-
-
-/*
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: MainScreen(),
-    );
-  }
-}
-*/
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key, required this.title}) : super(key: key);
@@ -65,7 +51,31 @@ class _MainScreenState extends State<MainScreen> {
     centerTitle: true,
     backgroundColor: Colors.black,
     toolbarOpacity: 0.7,
-
+        automaticallyImplyLeading: false,
+      actions:
+      [
+        if(_selectedIndex == 3)
+        IconButton(
+          onPressed: (){
+            Navigator.pushNamed(context, '/filter');
+          },
+          icon: Icon(
+            Icons.filter_list_rounded,
+            size: 30,
+          ),
+          color: Colors.white
+      ),
+        if(_selectedIndex == 3)
+        IconButton(
+            onPressed: (){
+              Navigator.pushNamed(context, '/history');
+            },
+            icon: Icon(
+              Icons.history,
+              size: 30,
+            ),
+            color: Colors.white
+        ),],
     ),
 
     body: _widgetOptions.elementAt(_selectedIndex),

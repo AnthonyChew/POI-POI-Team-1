@@ -6,7 +6,7 @@ Still need to figure out how users gonna interact with the posts
  */
 
 import 'package:flutter/material.dart';
-import '../post.dart';
+import 'post.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'dart:async';
 import 'dart:ui';

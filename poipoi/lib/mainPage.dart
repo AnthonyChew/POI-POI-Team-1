@@ -1,15 +1,9 @@
 import 'dart:async';
 import 'dart:ui';
-
 import 'package:dot_navigation_bar/dot_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'post.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-
-
-
-
-
 
 void main() {
   runApp(MyApp());
@@ -49,9 +43,6 @@ class _HomeState extends State<Home> {
   ];
 
 
-
-
-
   //page number
   int _selectedIndex = 0;
 
@@ -70,7 +61,6 @@ class _HomeState extends State<Home> {
     });
 
   }
-
 
   @override
   Widget build(BuildContext context) {

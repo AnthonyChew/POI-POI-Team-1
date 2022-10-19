@@ -1,0 +1,5 @@
+
+poipoi/android/app/google-services.json
+poipoi/ios/firebase_app_id_file.json
+poipoi/ios/Runner/GoogleService-Info.plist
+poipoi/lib/firebase_options.dart

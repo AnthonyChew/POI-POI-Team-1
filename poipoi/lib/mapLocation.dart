@@ -33,20 +33,13 @@ import 'coordinates.dart';
 //   google_maps_flutter: ^2.0.1
 
 
-
-void main() {
-  runApp(const MaterialApp(
-    home: Home(),
-  ));
-}
-
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class AroundMePage extends StatefulWidget {
+  const AroundMePage({Key? key}) : super(key: key);
   @override
-  State<Home> createState() => _HomeState();
+  State<AroundMePage> createState() => _AroundMeState();
 }
 
-class _HomeState extends State<Home> {
+class _AroundMeState extends State<AroundMePage> {
   late GoogleMapController myMapController;
   Set<Marker> _markers = {};
   static const LatLng _kMapCenter = LatLng(1.385110, 103.745000);
@@ -56,39 +49,6 @@ class _HomeState extends State<Home> {
       tilt: 0,
       bearing: 0
   );
-
-  // List<Map> pokemon = [
-  //   {
-  //     "id": 1,
-  //     "name": "Bulbasaur",
-  //     "level": 1,
-  //   },
-  //   {
-  //     "id": 2,
-  //     "name": "Charmander",
-  //     "level": 1,
-  //   },
-  //   {
-  //     "id": 3,
-  //     "name": "Squirtle",
-  //     "level": 1,
-  //   },
-  //   {
-  //     "id": 4,
-  //     "name": "Ivysaur",
-  //     "level": 1,
-  //   },
-  //   {
-  //     "id": 5,
-  //     "name": "Charmeleon",
-  //     "level": 1,
-  //   },
-  //   {
-  //     "id": 6,
-  //     "name": "Wartortle",
-  //     "level": 1,
-  //   },
-  // ];
 
   int _index = 0;
   bool showLocation = true;
@@ -100,12 +60,6 @@ class _HomeState extends State<Home> {
     return Scaffold(
 
         backgroundColor: Colors.white60,
-        appBar: AppBar(
-          title: const Text('Fake Google Maps'),
-          centerTitle: true,
-          backgroundColor: Colors.black,
-        ),
-
         body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
