@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ThemeData().colorScheme.copyWith(),
           iconTheme: IconThemeData(color: Colors.white),
           fontFamily: GoogleFonts.openSans().fontFamily),
-      home: const MyHomePage(title: 'Home Page'),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
       routes: <String, WidgetBuilder>{
         "/signup": (BuildContext context) =>
             signUp.SignUpPage(title: 'Sign Up'),
