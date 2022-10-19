@@ -28,13 +28,14 @@ class _CommentSectionState extends State<CommentSection> {
     });
   }
 
-  
+
   Widget _buildCommentList() {
     return ListView.builder(
         itemBuilder: (context, index){
           if(index < _comments.length){
             return _buildCommentItem(_comments[index]);
           }
+          throw NullThrownError();
         }
         );
   }
