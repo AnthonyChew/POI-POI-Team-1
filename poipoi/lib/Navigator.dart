@@ -11,6 +11,11 @@ import 'HomePage.dart';
 import 'FindBuddyPage.dart';
 import 'mapLocation.dart';
 import 'FavouritePage.dart';
+import 'Settings.dart' as settings;
+import 'history.dart' as history;
+import 'filter.dart' as filter;
+
+
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key, required this.title}) : super(key: key);
@@ -54,10 +59,14 @@ class _MainScreenState extends State<MainScreen> {
         automaticallyImplyLeading: false,
       actions:
       [
+
         if(_selectedIndex == 3)
         IconButton(
           onPressed: (){
-            Navigator.pushNamed(context, '/filter');
+            setState(() {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => filter.Filter()));
+            });
+
           },
           icon: Icon(
             Icons.filter_list_rounded,
@@ -68,14 +77,25 @@ class _MainScreenState extends State<MainScreen> {
         if(_selectedIndex == 3)
         IconButton(
             onPressed: (){
-              Navigator.pushNamed(context, '/history');
+              setState(() {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => history.History()));
+              });
             },
             icon: Icon(
               Icons.history,
               size: 30,
             ),
             color: Colors.white
-        ),],
+        ),
+
+        IconButton(icon: Icon(Icons.settings,),
+          onPressed: (){
+            setState(() {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => settings.Settings(title: "Settings")));
+            });
+          },
+        ),
+      ],
     ),
 
     body: _widgetOptions.elementAt(_selectedIndex),

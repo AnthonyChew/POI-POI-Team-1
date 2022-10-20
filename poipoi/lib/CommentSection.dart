@@ -20,7 +20,7 @@ class CommentSection extends StatefulWidget {
 
 class _CommentSectionState extends State<CommentSection> {
 
-  List<Comment> _comments = [Comment(comment: 'hello people', dateTimePosted: '2022-05-2'), Comment(comment:'nihaooooooooooooooooooooooooo\nooooooooo\noooooooooooooooooooooooo', dateTimePosted: '222222')];
+  List<Comment> _comments = [];
 
   void _addComment(Comment val){
     setState(() {
@@ -91,7 +91,8 @@ class _CommentSectionState extends State<CommentSection> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Comments"),
+        title: Text("COMMENTS",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans', letterSpacing:2.0,)),
         centerTitle: true,
         backgroundColor: Colors.black,
         toolbarOpacity: 0.7,
@@ -102,6 +103,7 @@ class _CommentSectionState extends State<CommentSection> {
         children: [
 
         Container(
+          padding: EdgeInsets.only(left:5.0,),
           decoration: const BoxDecoration(
               image: DecorationImage(
                 alignment: Alignment.center,
@@ -124,8 +126,9 @@ class _CommentSectionState extends State<CommentSection> {
         SizedBox(
           width: 380,
           child: TextField(
-            controller: _controller,
 
+
+            controller: _controller,
             textInputAction: TextInputAction.go,
             onChanged:(String text){
               setState(() {
@@ -150,22 +153,25 @@ class _CommentSectionState extends State<CommentSection> {
 
 
             },
-            autocorrect: true,
 
 
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500,),
-            maxLines: 2,
 
             decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+              width: 3, color: Colors.white),
+              borderRadius:
+              BorderRadius.all(Radius.circular(20)),
+              ),
 
               contentPadding: const EdgeInsets.all(10.0),
               hintText: '...',
-              hintStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w300, ),
+              hintStyle: TextStyle(color: Colors.white, ),
               labelText: 'Write a comment...',
-              labelStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w300, ),
-                errorText: _submitted ? _errorText : null,
-              errorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color:Colors.red,)),
+              labelStyle: TextStyle(color: Colors.white, ),
+              errorText: _submitted ? _errorText : null,
+              errorBorder: OutlineInputBorder(borderSide: BorderSide(color:Colors.red,)),
               suffixIcon: IconButton(
                 icon:Icon(Icons.clear),
                 onPressed: () => _controller.clear()
