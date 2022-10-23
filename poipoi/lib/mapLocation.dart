@@ -31,21 +31,22 @@ import 'coordinates.dart';
 
 
 
-void main() {
-  runApp(const MaterialApp(
-    home: Home(),
-  ));
-}
+// void main() {
+//   runApp(const MaterialApp(
+//     home: AroundMePage(),
+//   ));
+// }
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class AroundMePage extends StatefulWidget {
+  const AroundMePage({Key? key}) : super(key: key);
   @override
-  State<Home> createState() => _HomeState();
+  State<AroundMePage> createState() => _AroundMePageState();
 }
 
-class _HomeState extends State<Home> {
+class _AroundMePageState extends State<AroundMePage> {
   late GoogleMapController myMapController;
   Set<Marker> _markers = {};
+  static const LatLng me = LatLng(1.385110, 103.744750);
   static const LatLng _kMapCenter = LatLng(1.385110, 103.745000);
   static const CameraPosition _kInitialPosition = CameraPosition(
       target: _kMapCenter,
@@ -55,8 +56,6 @@ class _HomeState extends State<Home> {
   );
   bool showLocation = true;
   bool locationOrAvatar = true;
-  // List<Card> _addLevels = [];
-  // List<Card> _addAvatars = [];
 
   @override
   Widget build(BuildContext context) {
@@ -131,25 +130,6 @@ class _HomeState extends State<Home> {
                       flex: 1,
                       child: Row(
                         children: [
-                          // Expanded( // Empty Expanded to fill up space
-                          //   child: Container(),
-                          // ),
-                          // Expanded(
-                          //   child: ElevatedButton(
-                          //       onPressed: () {
-                          //         setState(() {
-                          //           for (int i = 0; i < Coordinates().pokemon.length; i++) {
-                          //             Coordinates().pokemon[i]['level'] = 1;
-                          //           }
-                          //         });
-                          //       },
-                          //       style: ElevatedButton.styleFrom(
-                          //         backgroundColor: Colors.purpleAccent,
-                          //         padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                          //       ),
-                          //       child: const Icon(Icons.lock_reset_rounded),
-                          //     ),
-                          // ),
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
@@ -157,7 +137,6 @@ class _HomeState extends State<Home> {
                                 {
                                   showLocation = !showLocation;
                                 });
-
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white54,
@@ -172,7 +151,6 @@ class _HomeState extends State<Home> {
                                 {
                                   locationOrAvatar = !locationOrAvatar;
                                 });
-
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white54,
@@ -180,9 +158,6 @@ class _HomeState extends State<Home> {
                               child: const Icon(Icons.accessibility_new, color: Colors.black),
                             ),
                           ),
-                          // Expanded( // Empty Expanded to fill up space
-                          //   child: Container(),
-                          // ),
                         ],
                       ),
                     ),
@@ -195,10 +170,10 @@ class _HomeState extends State<Home> {
                               itemCount: Coordinates().locations.length,
                               itemBuilder:(context, index){
                                 if (
-                                (_kMapCenter.latitude - Coordinates().locations[index]['latlong'].latitude) < 0.003 &&
-                                    (_kMapCenter.latitude - Coordinates().locations[index]['latlong'].latitude) > -0.003 &&
-                                    (_kMapCenter.longitude - Coordinates().locations[index]['latlong'].longitude) < 0.003 &&
-                                    (_kMapCenter.longitude - Coordinates().locations[index]['latlong'].longitude) > -0.003
+                                  (me.latitude - Coordinates().locations[index]['latlong'].latitude) < 0.003 &&
+                                  (me.latitude - Coordinates().locations[index]['latlong'].latitude) > -0.003 &&
+                                  (me.longitude - Coordinates().locations[index]['latlong'].longitude) < 0.003 &&
+                                  (me.longitude - Coordinates().locations[index]['latlong'].longitude) > -0.003
                                 ) {
                                   return Card(
                                     shape: RoundedRectangleBorder(
@@ -212,7 +187,7 @@ class _HomeState extends State<Home> {
                                         children: [
                                           Expanded(
                                             flex: 4,
-                                            child: Image.asset('assets/${Coordinates().locations[index]['name']}.jpg'),
+                                            child: Image.asset(Coordinates().locations[index]['image']),
                                           ),
                                           Expanded(
                                               flex: 1,
@@ -231,7 +206,7 @@ class _HomeState extends State<Home> {
                                                           children: [
                                                             Text("${Coordinates().locations[index]['id']}"),
                                                             Text("${Coordinates().locations[index]['latlong']}"),
-                                                            Image.asset('assets/${Coordinates().locations[index]['name']}.jpg')
+                                                            Image.asset("${Coordinates().locations[index]['image']}")
                                                           ]
                                                       ),
                                                     ));
@@ -258,84 +233,84 @@ class _HomeState extends State<Home> {
                                 );
                               }
                           ),
-                        ),
-                    if (!locationOrAvatar)
-                      Expanded(
-                        flex: 4,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: Coordinates().pokemon.length,
-                          itemBuilder: (context, index) {
-                            if (
-                            (_kMapCenter.latitude - Coordinates().pokemon[index]['latlong'].latitude) < 0.003 &&
-                                (_kMapCenter.latitude - Coordinates().pokemon[index]['latlong'].latitude) > -0.003 &&
-                                (_kMapCenter.longitude - Coordinates().pokemon[index]['latlong'].longitude) < 0.003 &&
-                                (_kMapCenter.longitude - Coordinates().pokemon[index]['latlong'].longitude) > -0.003
-                            ) {
-                              return Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                                color: Colors.black45,
-                                elevation: 10,
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width * 0.312,
-                                  child: Column(
-                                    children: [
-                                      Expanded(
-                                        flex: 4,
-                                        child: CircleAvatar(
-                                          backgroundImage: AssetImage('assets/${Coordinates().pokemon[index]['name']}.jpg'),
-                                          radius: 120.0,
-                                          backgroundColor: Colors.black,
+                        )
+                      else if (!locationOrAvatar)
+                        Expanded(
+                          flex: 4,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: Coordinates().pokemon.length,
+                            itemBuilder: (context, index) {
+                              if (
+                                (me.latitude - Coordinates().pokemon[index]['latlong'].latitude) < 0.003 &&
+                                (me.latitude - Coordinates().pokemon[index]['latlong'].latitude) > -0.003 &&
+                                (me.longitude - Coordinates().pokemon[index]['latlong'].longitude) < 0.003 &&
+                                (me.longitude - Coordinates().pokemon[index]['latlong'].longitude) > -0.003
+                              ) {
+                                return Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  color: Colors.black45,
+                                  elevation: 10,
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width * 0.312,
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                          flex: 4,
+                                          child: CircleAvatar(
+                                            backgroundImage: AssetImage(Coordinates().pokemon[index]['image']),
+                                            radius: 120.0,
+                                            backgroundColor: Colors.black,
+                                          ),
                                         ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Container(
-                                          color: Colors.red[index + 50],
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.orange[index * 100 + 100],
-                                              padding: const EdgeInsets.symmetric(
-                                                  vertical: 1.0, horizontal: 1.0
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              showDialog(context: context, builder: (context) => AlertDialog(
-                                                title: Text('${Coordinates().pokemon[index]['name']}'),
-                                                content: Column(
-                                                  children: [
-                                                    Text("${Coordinates().pokemon[index]['id']}"),
-                                                    Text("${Coordinates().pokemon[index]['latlong']}"),
-                                                    Image.asset('${Coordinates().pokemon[index]['image']}'),
-                                                  ],
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                            color: Colors.red[index + 50],
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.orange[index * 100 + 100],
+                                                padding: const EdgeInsets.symmetric(
+                                                    vertical: 1.0, horizontal: 1.0
                                                 ),
-                                              ));
-                                            },
-                                            child: Text(
-                                              '${Coordinates().pokemon[index]['name']}',
-                                              style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 15.0,
-                                                letterSpacing: 1.0,
-                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              onPressed: () {
+                                                showDialog(context: context, builder: (context) => AlertDialog(
+                                                  title: Text('${Coordinates().pokemon[index]['name']}'),
+                                                  content: Column(
+                                                    children: [
+                                                      Text("${Coordinates().pokemon[index]['id']}"),
+                                                      Text("${Coordinates().pokemon[index]['latlong']}"),
+                                                      Image.asset("${Coordinates().pokemon[index]['image']}"),
+                                                    ],
+                                                  ),
+                                                ));
+                                              },
+                                              child: Text(
+                                                '${Coordinates().pokemon[index]['name']}',
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 15.0,
+                                                  letterSpacing: 1.0,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                );
+                              }
+                              return Container(
+                                width: 0,
                               );
-                            }
-                            return Container(
-                              width: 0,
-                            );
-                          },
-                        ),
-                      ),
+                            },
+                          ),
+                        )
                   ],
                 ),
               ),
@@ -356,7 +331,7 @@ class _HomeState extends State<Home> {
         ),
         icon: BitmapDescriptor.defaultMarker,
       ));
-      _markers = Coordinates().list.toSet();
+      _markers = Coordinates().getMarkers(locationOrAvatar, me).toSet();
     });
 
     return _markers;
