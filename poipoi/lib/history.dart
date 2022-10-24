@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'Cards/visited_location.dart';
 import 'Cards/VisitedLocation_card.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 class History extends StatefulWidget {
   const History({Key? key}) : super(key: key);
 
@@ -21,14 +23,9 @@ class _HistoryState extends State<History> {
     return Scaffold(
       backgroundColor:Colors.grey[200],
       appBar: AppBar(
-        title: Text('  View History',
-          style: TextStyle(
-            fontSize: 30.0,
-            fontFamily: 'FredokaOne',
-          ),
-        ),
+        title: Text('VIEW HISTORY', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans',letterSpacing:2.0,)),
+        centerTitle: true,
         backgroundColor: Colors.black,
-        toolbarHeight: 100,
       ),
       body: Column(
         children: visited_locations.map((visited_location) => VisitedLocation_Card(

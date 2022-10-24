@@ -19,14 +19,9 @@ class _FilterState extends State<Filter> {
     return Scaffold(
       backgroundColor:Colors.grey[200],
       appBar: AppBar(
-        title: Text('  Filter',
-          style: TextStyle(
-            fontSize: 30.0,
-            fontFamily: 'FredokaOne',
-          ),
-        ),
+        title: Text('FILTER', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans',letterSpacing:2.0,)),
+        centerTitle: true,
         backgroundColor: Colors.black,
-        toolbarHeight: 100,
       ),
       body: ListView(
         children:[
@@ -44,9 +39,12 @@ class _FilterState extends State<Filter> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children:[
                       Text('Type',
-                          style: TextStyle(
-                              fontSize:20.0,
-                              fontFamily: 'FredokaOne')
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.grey[600],
+                          fontFamily: 'OpenSans',
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       RadioListTile(
                         title: Text('Healthy Food'),
@@ -108,9 +106,12 @@ class _FilterState extends State<Filter> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children:[
                             Text('Type of Healthy Foods',
-                                style: TextStyle(
-                                    fontSize:20.0,
-                                    fontFamily: 'FredokaOne')
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                color: Colors.grey[600],
+                                fontFamily: 'OpenSans',
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             CheckboxListTile(
                               controlAffinity: ListTileControlAffinity.leading,
@@ -175,9 +176,12 @@ class _FilterState extends State<Filter> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children:[
                         Text('Type of Sports',
-                            style: TextStyle(
-                                fontSize:20.0,
-                                fontFamily: 'FredokaOne')
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            color: Colors.grey[600],
+                            fontFamily: 'OpenSans',
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         CheckboxListTile(
                           controlAffinity: ListTileControlAffinity.leading,
