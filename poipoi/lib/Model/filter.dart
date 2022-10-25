@@ -53,7 +53,7 @@ class _FilterState extends State<Filter> {
                         onChanged: (value){
                           print("$value");
                           setState((){
-                            type = value;
+                            type = value as String?;
                           });
                         },
                       ),
@@ -64,7 +64,7 @@ class _FilterState extends State<Filter> {
                         onChanged: (value){
                           print("$value");
                           setState((){
-                            type = value;
+                            type = value as String?;
                           });
                         },),
                     ],),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'coordinates.dart';
+import 'Model/coordinates.dart';
 
 // READ ME FIRST
 // To run this file, first gotta set up google maps properly.

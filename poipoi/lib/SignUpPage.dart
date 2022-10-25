@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +11,11 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:developer' as developer;
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:poipoi/GlobalData.dart' as global;
+import 'package:poipoi/Model/GlobalData.dart' as global;
+import 'package:poipoi/Settings/MyUser.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key, required this.title});
+  const SignUpPage({key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -733,17 +735,23 @@ class signUp extends State<SignUpPage> {
                                                 .collection("user_data")
                                                 .doc(FirebaseAuth.instance.currentUser?.uid);
 
+                                            final storageRef = FirebaseStorage.instance.ref();
+                                            final imgRef = storageRef.child(FirebaseAuth.instance.currentUser!.uid.toString());
+                                            await imgRef.putFile(imageTemp);
+
                                             await docUser.set({
                                               'name': nameContoller.text,
                                               'birthday': dateController.text,
                                               'is_male': isMale,
-                                              'profile_pic_path': imageTemp.path
+                                              'profile_pic_path': FirebaseAuth.instance.currentUser!.uid.toString()
                                             });
+
+                                            final  user_data = MyUser(FirebaseAuth.instance.currentUser!.email.toString() ,nameContoller.text,dateController.text,isMale,imageTemp);
 
                                             Navigator.pushNamed(
                                               context,
                                               '/mainScreen',
-                                            );
+                                              arguments: user_data);
                                           }
                                         },
                                         style: ButtonStyle(

@@ -7,13 +7,14 @@ But within tabs can make it disappear by using push.Navigator() (see Screen2) if
  */
 
 import 'package:flutter/material.dart';
+import 'package:poipoi/Settings/MyUser.dart';
 import 'HomePage.dart';
 import 'FindBuddyPage.dart';
 import 'mapLocation.dart';
 import 'FavouritePage.dart';
-import 'Settings.dart' as settings;
-import 'history.dart' as history;
-import 'filter.dart' as filter;
+import 'Settings/SettingsPage.dart' as settings;
+import 'HistoryPage.dart' as history;
+import 'Model/filter.dart' as filter;
 
 
 
@@ -49,6 +50,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user_data = ModalRoute.of(context)!.settings.arguments as MyUser;
+
     return Scaffold(
 
     appBar: AppBar(
@@ -91,7 +94,11 @@ class _MainScreenState extends State<MainScreen> {
         IconButton(icon: Icon(Icons.settings,),
           onPressed: (){
             setState(() {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => settings.Settings(title: "Settings")));
+              Navigator.pushNamed(
+                  context,
+                  '/settings',
+                  arguments: user_data);
+
             });
           },
         ),

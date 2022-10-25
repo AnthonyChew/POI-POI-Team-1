@@ -1,13 +1,8 @@
-/*
-PlaceHolder for Settings Page
- */
-
 
 import 'package:flutter/material.dart';
-import 'user.dart';
-import 'user_preferences.dart';
+import 'MyUser.dart';
 import 'profile_widget.dart';
-import 'edit_profile_page.dart';
+import 'EditProfilePage.dart';
 import 'change_password_page.dart';
 import 'contact_us_page.dart';
 
@@ -20,9 +15,10 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+
   @override
   Widget build(BuildContext context) {
-    final user= UserPreferences.myUser;
+    final user = ModalRoute.of(context)!.settings.arguments as MyUser;
     return Scaffold(
         appBar: AppBar(
         title: Text('SETTINGS', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans',letterSpacing:2.0,)),
@@ -54,11 +50,12 @@ class _SettingsState extends State<Settings> {
             children:[
               Row(
               children:[ProfileWidget(
-                imagePath: user.imagePath,
+                imagePath: user.imagePath.path,
                 onClicked: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context)=>EditProfilePage()),
-                  );
+                  Navigator.pushNamed(
+                      context,
+                      '/editProfile',
+                      arguments: user);
                 },
 
               ),

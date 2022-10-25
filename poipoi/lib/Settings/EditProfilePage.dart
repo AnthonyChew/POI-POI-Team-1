@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'user.dart';
-import 'user_preferences.dart';
+import 'MyUser.dart';
 import 'profile_widget.dart';
 import 'textfield_widget.dart';
 import 'button_widget.dart';
@@ -16,14 +15,14 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  User user = UserPreferences.myUser;
 
   @override
   Widget build(BuildContext context) {
+    MyUser user = ModalRoute.of(context)!.settings.arguments as MyUser;
     return Builder(
     builder: (context) =>Scaffold(
       appBar: AppBar(
-        title: Text('EDIT ACCOUNT', style: TextStyle(fontSize: 20,
+        title: Text('Update Profile', style: TextStyle(fontSize: 20,
           fontWeight: FontWeight.bold,
           fontFamily: 'NotoSans',
           letterSpacing: 2.0,)),
@@ -41,7 +40,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               margin: EdgeInsets.all(10),
             ),
             ProfileWidget(
-              imagePath: user.imagePath,
+              imagePath: user.imagePath.path,
               isEdit: true,
               onClicked: () async {
                 final image = await ImagePicker().getImage(source: ImageSource.gallery);
@@ -51,7 +50,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 final imageFile = File('${directory.path}/$name');
                 final newImage =
                     await File(image.path).copy(imageFile.path);
-                setState(() => user = user.copy(imagePath: newImage.path));
+                setState(() => user = (user.imagePath =  newImage.path as File) as MyUser);
                 },
             ),
             const SizedBox(height: 24),

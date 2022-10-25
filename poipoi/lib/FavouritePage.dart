@@ -5,8 +5,8 @@ PlaceHolder for Favourite Page
 import 'package:flutter/material.dart';
 import 'Cards/location.dart';
 import 'Cards/location_card.dart';
-import 'filter.dart';
-import 'history.dart';
+import 'Model/filter.dart';
+import 'HistoryPage.dart';
 
 
 class FavouritePage extends StatefulWidget {
