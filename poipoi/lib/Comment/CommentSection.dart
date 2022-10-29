@@ -4,14 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'Comment.dart';
 
-void main() {
-  runApp(const CommentSection());
-}
-
 
 class CommentSection extends StatefulWidget {
   const CommentSection({Key? key}) : super(key: key);
-
 
 
   @override
@@ -20,7 +15,7 @@ class CommentSection extends StatefulWidget {
 
 class _CommentSectionState extends State<CommentSection> {
 
-  List<Comment> _comments = [];
+  List<Comment> _comments = []; //load past comments for the specific post here
 
   void _addComment(Comment val){
     setState(() {

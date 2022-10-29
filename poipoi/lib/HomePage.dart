@@ -10,7 +10,7 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
-
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'Comment/Post.dart';
 
 
@@ -25,37 +25,56 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final RoundedLoadingButtonController _btnController1 = RoundedLoadingButtonController();
+
   void _doSomething(RoundedLoadingButtonController controller) async {
     Timer(Duration(seconds: 10), () {
       controller.success();
     });
   }
 
-  //hardcode.. need to edit later on..
-  //gets a list of posts
+  //hardcode...
+  //each user needs a unique set of posts as they may have added diff posts to fav page previously
+  //gets a list of posts (load from firebase) ... ratings possible to link to google??
   List<Post> posts = [
-    Post(title: 'Punggol Park', imageURL: ['assets/images/pp1.JPG', 'assets/images/pp2.jpg', 'assets/images/pp1.JPG'] ),
-
-    Post(title: 'Woodlands Park', imageURL: ['assets/images/pp1.JPG', 'assets/images/pp2.jpg'] ),
+    Post(title: 'Punggol Park',
+      imageURL: [
+        'assets/images/pp1.JPG',
+        'assets/images/pp2.jpg',
+        'assets/images/pp1.JPG'
+      ],
+      ratings: 5, liked: false,),
+    Post(title: 'Aoodlands Park',
+        imageURL: ['assets/images/pp1.JPG', 'assets/images/pp2.jpg'],
+        ratings: 0.5, liked: true),
+    Post(title: 'Wbodlands Park',
+        imageURL: ['assets/images/pp1.JPG', 'assets/images/pp2.jpg'],
+        ratings: 2.5, liked: false),
+    Post(title: 'WAodlands Park',
+        imageURL: ['assets/images/pp1.JPG', 'assets/images/pp2.jpg'],
+        ratings: 0, liked: true),
   ];
 
-_commentButtonPressed(int index){
-  setState(() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => posts[index].page));
-  });
-}
+  _commentButtonPressed(int index) {
+    setState(() {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => posts[index].page));
+    });
+  }
+
+  bool sortByRatings = false;
+
 
   @override
   Widget build(BuildContext context) {
     return Container(
-    child:
+      child:
       Stack(
-          children:[
+          children: [
             Container(
               decoration: const BoxDecoration(
                   image: DecorationImage(
                     alignment: Alignment.center,
-                    image: AssetImage('assets/images/try.jpg', ),
+                    image: AssetImage('assets/images/try.jpg',),
                     fit: BoxFit.cover,
                   )
               ),
@@ -67,147 +86,246 @@ _commentButtonPressed(int index){
               ),
             ),
 
-
-
-
-            // only for Home Page!!
-            ListView.builder(
-                itemCount: posts.length,
-                itemBuilder:(context, index){
-                  return Card(
-                      elevation: 20.0,
-                      shadowColor: Colors.white,
-                      margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0,),
-                      child: Column(
-                          children:[
-                            Column(
-                              children: [
-                                Text(
-                                  posts[index].title,
-                                  style: TextStyle(fontSize:20.0, fontFamily: 'NotoSans', fontWeight: FontWeight.bold,),
-                                ),
-
-
-
-                              ],
-                            ),
-
-
-                            Container(
-
-                                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                                child: ImageSlideshow(
-                                  indicatorColor: Colors.blue,
-                                 // onPageChanged: (value) { debugPrint('Page changed: $value');},
-                                  isLoop: false,
-                                  children: List.generate(
-                                      posts[index].imageURL.length, (i)
-                                            {
-                                              return Image.asset(
-                                                posts[index].imageURL[i],
-                                                fit: BoxFit.cover,
-                                              );
-
-                                            }
-
-
-                                ),
-
-                            ),),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                children:[
-                                Container(
-                                  margin: const EdgeInsets.only(left:5.0, right: 5.0),
-
-                                  child: RoundedLoadingButton(
-                                    width: 60.0,
-                                    controller:_btnController1,
-                                    successIcon: Icons.pin_drop,
-                                    failedIcon: Icons.wrong_location,
-
-                                    child: Container(
-                                      margin: EdgeInsets.only(right:5.0,),
-                                      padding: const EdgeInsets.fromLTRB(10.0,2.0,5.0,5.0),
-                                      child: Row(
-                                          children: [
-                                            Icon( Icons.directions),
-                                            Text('Directions', style: TextStyle(color: Colors.white, fontFamily: 'NotoSans', fontWeight: FontWeight.bold,)),
-                                          ]
-                                      ),
-                                    ),
-
-                                    onPressed: () => _doSomething(_btnController1),
-                                  ),
-                                ),
-
-                                Container(
-
-                                  child: RoundedLoadingButton(
-                                    width: 20.0,
-                                    controller:_btnController1,
-                                    successIcon: Icons.pin_drop,
-                                    failedIcon: Icons.wrong_location,
-                                    color: Colors.white,
-                                    valueColor: Colors.blue,
-                                    errorColor: Colors.white,
-                                    successColor: Colors.white,
-
-                                    child: Container(
-                                      margin: EdgeInsets.only(right:5.0,),
-                                      padding: const EdgeInsets.fromLTRB(5.0,2.0,5.0,5.0),
-
-                                      child: Row(
-                                          children: [
-                                            Icon( Icons.gps_fixed_outlined, color: Colors.blue,),
-                                            Text('Start', style: TextStyle(color: Colors.blue, fontFamily: 'NotoSans', fontWeight: FontWeight.bold,)),
-                                          ]
-                                      ),
-                                    ),
-
-                                    onPressed: () => _doSomething(_btnController1),
-                                  ),
-                                ),
-                                ],
-                                ),
-                                Container(
-                                  padding: EdgeInsets.only(right:10.0),
-                                  child: IconButton(
-                                      iconSize : 50.0,
-                                      onPressed: () {
-                                        setState(() {
-                                          posts[index].setClick(true);
-                                          _commentButtonPressed(index);
-                                        });
-                                      },
-                                      color: Colors.grey,
-                                      icon: Icon( Icons.chat_bubble_rounded),
-                                ),
-                                ),
-                              ],
-                            ),
-
-
-                          ]
-
-                      ),
-                  );
-                }
-
-
-
-            ),
+            Expanded(child: _buildPostList()),
 
           ]
 
       ),
 
 
-
-
-
     );
   }
+
+  Widget _ratingBar(double rate) {
+    return RatingBar.builder(
+      initialRating: rate,
+      direction: Axis.horizontal,
+      allowHalfRating: true,
+      itemCount: 5,
+      itemPadding: EdgeInsets.symmetric(horizontal: 0.5),
+      itemBuilder: (context, _) =>
+          Icon(
+            Icons.star,
+            color: Colors.amber,
+            size: 1.0,
+          ),
+      ignoreGestures: true,
+      onRatingUpdate: (rating) {},
+    );
+  }
+
+  Widget _buildPostList()=> ListView.builder(
+          itemCount: posts.length,
+          itemBuilder: (context, index) {
+            final sortedItems = posts.sort((a,b) {
+              if(sortByRatings){
+                return b.ratings.compareTo(a.ratings);
+              }
+              return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+            });
+            return Card(
+              color: Colors.black.withOpacity(0.8),
+              margin: EdgeInsets.symmetric(
+                vertical: 10.0, horizontal: 10.0,),
+              child: Column(
+                  children: [
+                    Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5.0),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const SizedBox(width: 32.0),
+                                  Container(
+                                    child: Text(
+                                      posts[index].title,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Colors.white,
+                                        fontSize: 25.0,
+                                        fontFamily: 'NotoSans',
+                                        fontWeight: FontWeight.bold,),
+                                    ),
+                                  ),
+
+
+                                  SizedBox(
+                                    width: 32.0,
+                                    child: PopupMenuButton(
+                                      color: Colors.white,
+                                      itemBuilder: (context) => [
+                                        PopupMenuItem<int>(
+                                          value: 0,
+                                          child: posts[index].liked? Text("Remove from Favourites",style: TextStyle(color: Colors.black)): Text("Add to Favourites",style: TextStyle(color: Colors.black)),
+                                        ),
+                                        PopupMenuItem<int>(
+                                          value: 1,
+                                          child: sortByRatings? Text("Sort A-Z",style: TextStyle(color: Colors.black)): Text("Sort by Ratings",style: TextStyle(color: Colors.black)),
+                                        ),
+
+
+                                      ],
+
+                                      onSelected: (item)
+                                      {
+                                        switch(item){
+                                          case 0:
+                                            setState(() {//-------------------------------------------------> database need to update too to save for next login
+                                              posts[index].liked = !posts[index].liked;
+                                            });
+
+                                            break;
+                                          case 1:
+                                            setState(() {
+                                              sortByRatings = !sortByRatings;
+
+                                            });
+                                            break;
+                                        }
+
+
+                                      },
+                                    ),
+                                  ),
+
+                                ]
+
+                            ),
+                          ),
+
+
+
+
+                          Stack(
+                              children:[
+                                Container(
+                                  padding: EdgeInsets.fromLTRB(
+                                      0.0, 10.0, 0.0, 10.0),
+                                  child: ImageSlideshow(
+                                    indicatorColor: Colors.white,
+                                    // onPageChanged: (value) { debugPrint('Page changed: $value');},
+                                    isLoop: false,
+                                    children: List.generate(
+                                        posts[index].imageURL.length, (i) {
+                                      return Image.asset(
+                                        posts[index].imageURL[i],
+                                        fit: BoxFit.cover,
+                                      );
+                                    }
+
+
+                                    ),
+
+                                  ),),
+
+
+                                Container(
+                                    padding: EdgeInsets.only(top: 8.0),
+                                    child: _ratingBar(posts[index].ratings)
+                                )
+
+                              ]
+                          ),
+
+                        ]
+                    ),
+
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(bottom: 5.0),
+                          child: Row(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 5.0, right: 5.0, bottom: 2.0),
+
+                                child: RoundedLoadingButton(
+                                  width: 60.0,
+                                  controller: _btnController1,
+                                  successIcon: Icons.pin_drop,
+                                  failedIcon: Icons.wrong_location,
+
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 5.0,),
+                                    padding: const EdgeInsets.fromLTRB(
+                                        10.0, 2.0, 5.0, 5.0),
+                                    child: Row(
+                                        children: [
+                                          Icon(Icons.directions),
+                                          Text('Directions',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontFamily: 'NotoSans',
+                                                fontWeight: FontWeight
+                                                    .bold,)),
+                                        ]
+                                    ),
+                                  ),
+
+                                  onPressed: () =>
+                                      _doSomething(_btnController1),
+                                ),
+                              ),
+
+                              RoundedLoadingButton(
+                                width: 20.0,
+                                controller: _btnController1,
+                                successIcon: Icons.pin_drop,
+                                failedIcon: Icons.wrong_location,
+                                color: Colors.white,
+                                valueColor: Colors.blue,
+                                errorColor: Colors.white,
+                                successColor: Colors.white,
+
+                                child: Container(
+                                  margin: EdgeInsets.only(right: 5.0,),
+                                  padding: const EdgeInsets.fromLTRB(
+                                      10.0, 2.0, 5.0, 5.0),
+
+                                  child: Row(
+                                      children: [
+                                        Icon(Icons.gps_fixed_outlined,
+                                          color: Colors.blue,),
+                                        Text('Start', style: TextStyle(
+                                          color: Colors.blue,
+                                          fontFamily: 'NotoSans',
+                                          fontWeight: FontWeight.bold,)),
+                                      ]
+                                  ),
+                                ),
+
+                                onPressed: () =>
+                                    _doSomething(_btnController1),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(right: 10.0),
+                          child: IconButton(
+                            iconSize: 40.0,
+                            onPressed: () {
+                              setState(() {
+                               // posts[index].setClick(true);
+                                _commentButtonPressed(index);
+                              });
+                            },
+                            color: Colors.grey,
+                            icon: Icon(Icons.chat_bubble_rounded),
+                          ),
+                        ),
+                      ],
+                    ),
+
+
+                  ]
+
+              ),
+            );
+          }
+      );
+
 }
