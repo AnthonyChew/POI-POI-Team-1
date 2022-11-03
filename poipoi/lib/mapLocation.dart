@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'Model/coordinates.dart';
+import 'Model/GlobalData.dart' as gbdata;
 
 // READ ME FIRST
 // To run this file, first gotta set up google maps properly.
@@ -46,9 +47,10 @@ class AroundMePage extends StatefulWidget {
 class _AroundMePageState extends State<AroundMePage> {
   late GoogleMapController myMapController;
   Set<Marker> _markers = {};
-  static const LatLng me = LatLng(1.385110, 103.744750);
-  static const LatLng _kMapCenter = LatLng(1.385110, 103.745000);
-  static const CameraPosition _kInitialPosition = CameraPosition(
+  static LatLng me = LatLng(gbdata.position.latitude, gbdata.position.longitude);
+  // Lot One: 1.385110, 103.745000
+  static LatLng _kMapCenter = LatLng(gbdata.position.latitude, gbdata.position.longitude);
+  static CameraPosition _kInitialPosition = CameraPosition(
       target: _kMapCenter,
       zoom: 15.0,
       tilt: 0,
@@ -63,11 +65,7 @@ class _AroundMePageState extends State<AroundMePage> {
     return Scaffold(
 
         backgroundColor: Colors.white60,
-        appBar: AppBar(
-          title: const Text('Fake Google Maps'),
-          centerTitle: true,
-          backgroundColor: Colors.black,
-        ),
+
 
         body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -167,13 +165,13 @@ class _AroundMePageState extends State<AroundMePage> {
                           flex: 4,
                           child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              itemCount: Coordinates().locations.length,
+                              itemCount: gbdata.parkDate.length,
                               itemBuilder:(context, index){
                                 if (
-                                  (me.latitude - Coordinates().locations[index]['latlong'].latitude) < 0.003 &&
-                                  (me.latitude - Coordinates().locations[index]['latlong'].latitude) > -0.003 &&
-                                  (me.longitude - Coordinates().locations[index]['latlong'].longitude) < 0.003 &&
-                                  (me.longitude - Coordinates().locations[index]['latlong'].longitude) > -0.003
+                                  (me.latitude - gbdata.parkDate[index]['latlong'].latitude) < 0.033 &&
+                                  (me.latitude - gbdata.parkDate[index]['latlong'].latitude) > -0.033 &&
+                                  (me.longitude - gbdata.parkDate[index]['latlong'].longitude) < 0.033 &&
+                                  (me.longitude - gbdata.parkDate[index]['latlong'].longitude) > -0.033
                                 ) {
                                   return Card(
                                     shape: RoundedRectangleBorder(
@@ -187,7 +185,7 @@ class _AroundMePageState extends State<AroundMePage> {
                                         children: [
                                           Expanded(
                                             flex: 4,
-                                            child: Image.asset(Coordinates().locations[index]['image']),
+                                            child: Image.asset(gbdata.parkDate[index]['image']),
                                           ),
                                           Expanded(
                                               flex: 1,
@@ -201,18 +199,18 @@ class _AroundMePageState extends State<AroundMePage> {
                                                   ),
                                                   onPressed: () {
                                                     showDialog(context: context, builder: (context)=> AlertDialog(
-                                                      title: Text('${Coordinates().locations[index]['name']}'),
+                                                      title: Text('${gbdata.parkDate[index]['name']}'),
                                                       content: Column(
                                                           children: [
-                                                            Text("${Coordinates().locations[index]['id']}"),
-                                                            Text("${Coordinates().locations[index]['latlong']}"),
-                                                            Image.asset("${Coordinates().locations[index]['image']}")
+                                                            Text("${gbdata.parkDate[index]['id']}"),
+                                                            Text("${gbdata.parkDate[index]['latlong']}"),
+                                                            Image.asset("${gbdata.parkDate[index]['image']}")
                                                           ]
                                                       ),
                                                     ));
                                                   },
                                                   child: Text(
-                                                    '${Coordinates().locations[index]['name']}',
+                                                    '${gbdata.parkDate[index]['name']}',
                                                     style: const TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 15.0,
@@ -239,13 +237,13 @@ class _AroundMePageState extends State<AroundMePage> {
                           flex: 4,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: Coordinates().pokemon.length,
+                            itemCount: gbdata.healthyEateryDate.length,
                             itemBuilder: (context, index) {
                               if (
-                                (me.latitude - Coordinates().pokemon[index]['latlong'].latitude) < 0.003 &&
-                                (me.latitude - Coordinates().pokemon[index]['latlong'].latitude) > -0.003 &&
-                                (me.longitude - Coordinates().pokemon[index]['latlong'].longitude) < 0.003 &&
-                                (me.longitude - Coordinates().pokemon[index]['latlong'].longitude) > -0.003
+                                (me.latitude - gbdata.healthyEateryDate[index]['latlong'].latitude) < 0.033 &&
+                                (me.latitude - gbdata.healthyEateryDate[index]['latlong'].latitude) > -0.033 &&
+                                (me.longitude - gbdata.healthyEateryDate[index]['latlong'].longitude) < 0.033 &&
+                                (me.longitude - gbdata.healthyEateryDate[index]['latlong'].longitude) > -0.033
                               ) {
                                 return Card(
                                   shape: RoundedRectangleBorder(
@@ -259,11 +257,15 @@ class _AroundMePageState extends State<AroundMePage> {
                                       children: [
                                         Expanded(
                                           flex: 4,
-                                          child: CircleAvatar(
-                                            backgroundImage: AssetImage(Coordinates().pokemon[index]['image']),
-                                            radius: 120.0,
-                                            backgroundColor: Colors.black,
-                                          ),
+                                          // child: CircleAvatar(
+                                          //   backgroundImage: AssetImage(gbdata.healthyEateryDate[index]['image']),
+                                          //   radius: 120.0,
+                                          //   backgroundColor: Colors.black,
+                                          // )
+                                            child: Image.asset(
+                                              gbdata.healthyEateryDate[index]['image'],
+                                              color: Colors.black26,
+                                            ),
                                         ),
                                         Expanded(
                                           flex: 1,
@@ -278,18 +280,18 @@ class _AroundMePageState extends State<AroundMePage> {
                                               ),
                                               onPressed: () {
                                                 showDialog(context: context, builder: (context) => AlertDialog(
-                                                  title: Text('${Coordinates().pokemon[index]['name']}'),
+                                                  title: Text('${gbdata.parkDate[index]['name']}'),
                                                   content: Column(
                                                     children: [
-                                                      Text("${Coordinates().pokemon[index]['id']}"),
-                                                      Text("${Coordinates().pokemon[index]['latlong']}"),
-                                                      Image.asset("${Coordinates().pokemon[index]['image']}"),
+                                                      Text("${gbdata.healthyEateryDate[index]['id']}"),
+                                                      Text("${gbdata.healthyEateryDate[index]['latlong']}"),
+                                                      Image.asset("${gbdata.healthyEateryDate[index]['image']}"),
                                                     ],
                                                   ),
                                                 ));
                                               },
                                               child: Text(
-                                                '${Coordinates().pokemon[index]['name']}',
+                                                '${gbdata.healthyEateryDate[index]['name']}',
                                                 style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 15.0,
@@ -339,13 +341,13 @@ class _AroundMePageState extends State<AroundMePage> {
 
   void showDetails(int i) {
     showDialog(context: context, builder: (context) => AlertDialog(
-      title: Text('${Coordinates().pokemon[i]['name']}'),
+      title: Text('${gbdata.healthyEateryDate[i]['name']}'),
       content: Column(
         children: [
-          Text('${Coordinates().pokemon[i]['id']}'),
-          Text('${Coordinates().pokemon[i]['level']}'),
-          Text('${Coordinates().pokemon[i]['latlong']}'),
-          Text('${Coordinates().pokemon[i]['image']}'),
+          Text('${gbdata.healthyEateryDate[i]['id']}'),
+          Text('${gbdata.healthyEateryDate[i]['level']}'),
+          Text('${gbdata.healthyEateryDate[i]['latlong']}'),
+          Text('${gbdata.healthyEateryDate[i]['image']}'),
         ],
       ),
     ));
