@@ -46,6 +46,7 @@ dependencies:
   rounded_loading_button: ^2.0.8
   email_validator: ^2.1.16
   url_launcher: ^6.1.5
+  geocoding: ^2.0.5
 
 dev_dependencies:
   flutter_test:

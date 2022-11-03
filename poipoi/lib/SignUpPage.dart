@@ -217,51 +217,82 @@ class signUp extends State<SignUpPage> {
                                     FractionallySizedBox(
                                         widthFactor: 1,
                                         child: OutlinedButton(
-                                          onPressed: ()  {
+                                          onPressed: () async {
                                             setState(()  {
                                               if (emailController.text == "") {
-                                                emailErrorText = "Please enter email";
+                                                emailErrorText =
+                                                    "Please enter email";
                                                 emailError = true;
                                               } else
                                                 emailError = false;
 
-                                              if (passwordContoller.text =="") {
-                                                passwordErrorText = "Please enter password";
+                                              if (passwordContoller.text ==
+                                                  "") {
+                                                passwordErrorText =
+                                                    "Please enter password";
                                                 passwordError = true;
                                               } else
                                                 passwordError = false;
 
-                                              if (passwordCContoller.text == "") {
-                                                passwordCErrorText ="Please enter confirm email";
+                                              if (passwordCContoller.text ==
+                                                  "") {
+                                                passwordCErrorText =
+                                                    "Please enter confirm email";
                                                 passwordCError = true;
                                               } else
                                                 passwordCError = false;
-
-                                              if (!emailError &&!passwordError &&  !passwordCError)
-                                              {
-
-                                                try {
-                                                  Future<UserCredential> userCredential = global.auth.createUserWithEmailAndPassword(
-                                                      email: emailController.text,
-                                                      password: passwordContoller.text);
-                                                    accountFlag = true;
-                                                } on FirebaseAuthException catch (e) {
-                                                  if (e.code =='weak-password') {
-                                                    passwordErrorText = 'The password provided is too weak.';
-                                                    passwordError = true;
-                                                  } else if (e.code =='email-already-in-use') {
-                                                    emailErrorText = 'The account already exists for that email.';
-                                                    emailError = true;
-                                                  }
-                                                } catch (e) {
-                                                 print(e);
-                                                  emailError = true;
-                                                }
-
-                                              }
                                             });
 
+                                            if (!emailError &&
+                                                !passwordError &&
+                                                !passwordCError) {
+                                              if (passwordContoller.text ==
+                                                  passwordCContoller.text) {
+                                                try {
+                                                  UserCredential
+                                                      userCredential = await global
+                                                          .auth
+                                                          .createUserWithEmailAndPassword(
+                                                              email:
+                                                                  emailController
+                                                                      .text,
+                                                              password:
+                                                                  passwordContoller
+                                                                      .text);
 
+                                                  setState(() {
+                                                    accountFlag = true;
+                                                  });
+                                                } on FirebaseAuthException catch (e) {
+                                                  if (e.code ==
+                                                      'weak-password') {
+                                                    setState(() {
+                                                      passwordErrorText =
+                                                          'The password provided is too weak.';
+                                                      passwordError = true;
+                                                    });
+                                                  } else if (e.code ==
+                                                      'email-already-in-use') {
+                                                    setState(() {
+                                                      emailErrorText =
+                                                          'The account already exists for that email.';
+                                                      emailError = true;
+                                                    });
+                                                  }
+                                                } catch (e) {
+                                                  print(e);
+                                                }
+                                              } else {
+                                                setState(() {
+                                                  passwordErrorText =
+                                                  "Password are not the same!";
+                                                  passwordError = true;
+                                                  passwordCErrorText =
+                                                      "Password are not the same!";
+                                                  passwordCError = true;
+                                                });
+                                              }
+                                            }
                                           },
                                           style: ButtonStyle(
                                             foregroundColor:
@@ -719,7 +750,8 @@ class signUp extends State<SignUpPage> {
                                           if (isChoose) {
                                             developer.log("Copying image");
                                             String? path;
-                                            var _appDocumentsDirectory = await getApplicationDocumentsDirectory();
+                                            var _appDocumentsDirectory =
+                                                await getApplicationDocumentsDirectory();
                                             path = _appDocumentsDirectory.path;
 
                                             final String fileName = basename(
@@ -728,30 +760,44 @@ class signUp extends State<SignUpPage> {
                                             imageTemp = await imageTemp
                                                 .copy('$path/$fileName');
 
-                                            global.uuid = FirebaseAuth.instance.currentUser?.uid;
+                                            global.uuid = FirebaseAuth
+                                                .instance.currentUser?.uid;
 
                                             final docUser = FirebaseFirestore
                                                 .instance
                                                 .collection("user_data")
-                                                .doc(FirebaseAuth.instance.currentUser?.uid);
+                                                .doc(FirebaseAuth
+                                                    .instance.currentUser?.uid);
 
-                                            final storageRef = FirebaseStorage.instance.ref();
-                                            final imgRef = storageRef.child(FirebaseAuth.instance.currentUser!.uid.toString());
+                                            final storageRef =
+                                                FirebaseStorage.instance.ref();
+                                            final imgRef = storageRef.child(
+                                                FirebaseAuth
+                                                    .instance.currentUser!.uid
+                                                    .toString());
                                             await imgRef.putFile(imageTemp);
 
                                             await docUser.set({
                                               'name': nameContoller.text,
                                               'birthday': dateController.text,
                                               'is_male': isMale,
-                                              'profile_pic_path': FirebaseAuth.instance.currentUser!.uid.toString()
+                                              'profile_pic_path': FirebaseAuth
+                                                  .instance.currentUser!.uid
+                                                  .toString()
                                             });
 
-                                            final  user_data = MyUser(FirebaseAuth.instance.currentUser!.email.toString() ,nameContoller.text,dateController.text,isMale,imageTemp);
+                                            final user_data = MyUser(
+                                                FirebaseAuth
+                                                    .instance.currentUser!.email
+                                                    .toString(),
+                                                nameContoller.text,
+                                                dateController.text,
+                                                isMale,
+                                                imageTemp);
 
                                             Navigator.pushNamed(
-                                              context,
-                                              '/mainScreen',
-                                              arguments: user_data);
+                                                context, '/mainScreen',
+                                                arguments: user_data);
                                           }
                                         },
                                         style: ButtonStyle(

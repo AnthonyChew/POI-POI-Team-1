@@ -6,6 +6,7 @@ class Post {
   List<String> imageURL;
   bool click = false;
   CommentSection page = CommentSection();
+  int rating = 0; //retrieve from database
 
   Post({required this.title,  required this.imageURL, });
 

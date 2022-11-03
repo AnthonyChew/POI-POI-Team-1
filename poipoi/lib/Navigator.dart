@@ -6,16 +6,18 @@ But within tabs can make it disappear by using push.Navigator() (see Screen2) if
 --> Maybe for AroundMePage
  */
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:poipoi/Settings/MyUser.dart';
 import 'HomePage.dart';
-import 'FindBuddyPage.dart';
+//import 'FindBuddyPage.dart';
 import 'mapLocation.dart';
 import 'FavouritePage.dart';
 import 'Settings/SettingsPage.dart' as settings;
 import 'HistoryPage.dart' as history;
 import 'Model/filter.dart' as filter;
-
+import 'package:geocoding/geocoding.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -27,9 +29,12 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  List<Map> healthyEateryDate = [];
+  List<Map> parkDate = [];
+
   static const List<Widget> _appBarOptions = <Widget>[
     Text('HOME', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans', letterSpacing:2.0,)),
-    Text('FIND BUDDY', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans',letterSpacing:2.0,)),
+   // Text('FIND BUDDY', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans',letterSpacing:2.0,)),
     Text('AROUND ME', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans',letterSpacing:2.0,)),
     Text('FAVOURITES', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans',letterSpacing:2.0,)),
   ];
@@ -37,14 +42,54 @@ class _MainScreenState extends State<MainScreen> {
 
   List<Widget> _widgetOptions = <Widget>[
     HomePage(),
-    FindBuddyPage(),
+  //  FindBuddyPage(),
     AroundMePage(),
     FavouritePage(),
   ];
 
-  void _onItemTapped(int index) {
+  void _onItemTapped(int index) async{
+
     setState(() {
       _selectedIndex = index;
+    });
+  }
+
+  @override
+  void initState()
+  {
+    super.initState();
+    FirebaseFirestore.instance.collection("healthy_eatery").get().then((snapshot) async {
+      if (snapshot.docs.isNotEmpty) {
+        for (int i = 0; i < snapshot.docs.length; i++) {
+          Map<dynamic, dynamic> map = snapshot.docs[i].data();
+
+          var points = map['coordinates'] as GeoPoint;
+          healthyEateryDate.add({"id":i.toString() ,"name": map['NAME'],"level":map['ADDRESSFLOORNUMBER'],
+                      "latlong" : LatLng(points.latitude , points.longitude) ,
+          "info": InfoWindow(
+          title: map["ADDRESSTYPE"],
+          snippet: map['DESCRIPTION'],
+          ), "image" : map['PHOTOURL']
+          });
+        }
+      }
+    });
+
+    FirebaseFirestore.instance.collection("park").get().then((snapshot) async {
+      if (snapshot.docs.isNotEmpty) {
+        for (int i = 0; i < snapshot.docs.length; i++) {
+          Map<dynamic, dynamic> map = snapshot.docs[i].data();
+
+          var points = map['coordinates'] as GeoPoint;
+          parkDate.add({"id":i.toString() ,"name": snapshot.docs[i].id,"level":map['ADDRESSFLOORNUMBER'],
+            "latlong" : LatLng(points.latitude , points.longitude) ,
+            "info": InfoWindow(
+              title: map["ADDRESSSTREETNAME"],
+              snippet: map['DESCRIPTION'],
+            ), "image" : map['PHOTOURL']
+          });
+        }
+      }
     });
   }
 
@@ -128,11 +173,11 @@ class _MainScreenState extends State<MainScreen> {
     ),
 
     /// Find Buddy
-    BottomNavigationBarItem(
-    icon: Icon(Icons.people, size: 40.0),
-    backgroundColor: Colors.blue,
-    label: "Find Buddy",
-    ),
+    // BottomNavigationBarItem(
+    // icon: Icon(Icons.people, size: 40.0),
+    // backgroundColor: Colors.blue,
+    // label: "Find Buddy",
+    // ),
 
     /// Around Me
 
