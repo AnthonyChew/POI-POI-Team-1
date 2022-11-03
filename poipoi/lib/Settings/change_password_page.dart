@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:poipoi/Model/GlobalData.dart';
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({Key? key}) : super(key: key);
 
@@ -15,6 +16,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     emailController.dispose();
     super.dispose();
   }
+  void resetPassword(String email) async {
+    await auth.sendPasswordResetEmail(email: email);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Builder(
@@ -44,6 +49,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             TextFormField(
                               controller: emailController,
                               cursorColor: Colors.white,
+                              style: TextStyle(
+                                  color: Colors.white),
                               textInputAction: TextInputAction.done,
                               decoration: InputDecoration(labelText: 'Email',
                                 labelStyle: TextStyle(color: Colors.white),
@@ -67,7 +74,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                 'Change Password',
                                 style: TextStyle(fontSize: 24),
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                resetPassword(emailController.text);
+                              },
                             )
                           ]
                       )

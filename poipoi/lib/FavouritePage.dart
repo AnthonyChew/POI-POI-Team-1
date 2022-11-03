@@ -2,11 +2,13 @@
 PlaceHolder for Favourite Page
  */
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'Cards/location.dart';
 import 'Cards/location_card.dart';
-import 'Model/filter.dart';
-import 'HistoryPage.dart';
+import 'Model/GlobalData.dart';
+import "package:poipoi/Model/GlobalData.dart" as gbdata;
 
 
 
@@ -17,15 +19,12 @@ class FavouritePage extends StatefulWidget {
 
 class _FavouritePageState extends State<FavouritePage> {
 
-  //load fav locations here i.e. if liked == true
-  List<Location> locations=[
-    Location('Zhenghua Nature Park'),
-    Location('Clementi ActiveSG Stadium'),
-  ];
+
 
   Widget locationTemplate(location){
     return new LocationCard(location: location);
   }
+
 
   @override
   Widget build(BuildContext context) {
