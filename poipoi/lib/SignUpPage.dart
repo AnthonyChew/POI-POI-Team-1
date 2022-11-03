@@ -237,7 +237,7 @@ class signUp extends State<SignUpPage> {
                                               if (passwordCContoller.text ==
                                                   "") {
                                                 passwordCErrorText =
-                                                    "Please enter confirm email";
+                                                    "Please enter confirm password";
                                                 passwordCError = true;
                                               } else
                                                 passwordCError = false;
@@ -268,14 +268,14 @@ class signUp extends State<SignUpPage> {
                                                       'weak-password') {
                                                     setState(() {
                                                       passwordErrorText =
-                                                          'The password provided is too weak.';
+                                                          'Please provide password more then 6 character.';
                                                       passwordError = true;
                                                     });
                                                   } else if (e.code ==
                                                       'email-already-in-use') {
                                                     setState(() {
                                                       emailErrorText =
-                                                          'The account already exists for that email.';
+                                                          'An account already exists for that email.';
                                                       emailError = true;
                                                     });
                                                   }
@@ -285,10 +285,10 @@ class signUp extends State<SignUpPage> {
                                               } else {
                                                 setState(() {
                                                   passwordErrorText =
-                                                  "Password are not the same!";
+                                                  "Password are not the same.";
                                                   passwordError = true;
                                                   passwordCErrorText =
-                                                      "Password are not the same!";
+                                                      "Password are not the same/";
                                                   passwordCError = true;
                                                 });
                                               }
@@ -360,7 +360,7 @@ class signUp extends State<SignUpPage> {
                                         labelStyle: TextStyle(
                                           color: Colors.white,
                                         ),
-                                        labelText: 'First Name',
+                                        labelText: 'Full Name',
                                         errorText: nameError
                                             ? "Please enter your name"
                                             : null,
@@ -455,7 +455,7 @@ class signUp extends State<SignUpPage> {
                                                       color: Colors.white),
                                                 ),
                                                 errorText: dateError
-                                                    ? "Please choose your birthday"
+                                                    ? "Please choose your date of birth"
                                                     : null,
                                                 labelText: "Enter Date"),
                                             readOnly: true,
@@ -478,7 +478,7 @@ class signUp extends State<SignUpPage> {
                                                       formattedDate.toString();
                                                 });
                                               } else {
-                                                print("Not selected");
+                                                print("Gender not selected");
                                               }
                                             },
                                           ),

@@ -38,7 +38,8 @@ class MyApp extends StatelessWidget {
             signUp.SignUpPage(title: 'Sign Up'),
         "/mainScreen": (BuildContext context) =>
             mainScreen.MainScreen(title: 'Main Screen'),
-        "/settings": (BuildContext context) => setting.Settings(title: 'Settings'),
+        "/settings": (BuildContext context) =>
+            setting.Settings(title: 'Settings'),
         "/editProfile": (BuildContext context) => EditProfilePage(),
         //add more routes here
       },
@@ -166,47 +167,59 @@ class _MyHomePageState extends State<MyHomePage> {
                                     final docUser = await FirebaseFirestore
                                         .instance
                                         .collection("user_data")
-                                        .doc(FirebaseAuth.instance.currentUser?.uid).get() ;
+                                        .doc(FirebaseAuth
+                                            .instance.currentUser?.uid)
+                                        .get();
 
-                                    final storageRef = FirebaseStorage.instance.ref();
-                                    final islandRef = storageRef.child(FirebaseAuth.instance.currentUser!.uid);
+                                    final storageRef =
+                                        FirebaseStorage.instance.ref();
+                                    final islandRef = storageRef.child(
+                                        FirebaseAuth.instance.currentUser!.uid);
 
                                     String? path;
-                                    var _appDocumentsDirectory = await getApplicationDocumentsDirectory();
+                                    var _appDocumentsDirectory =
+                                        await getApplicationDocumentsDirectory();
                                     path = _appDocumentsDirectory.path;
 
-                                    final String fileName = basename( FirebaseAuth.instance.currentUser!.uid + "jpg"); // Filename without extension
-                                    final filePath ='$path/$fileName';
+                                    final String fileName = basename(
+                                        FirebaseAuth.instance.currentUser!.uid +
+                                            "jpg"); // Filename without extension
+                                    final filePath = '$path/$fileName';
                                     final file = File(filePath);
 
-                                    final downloadTask = islandRef.writeToFile(file);
-                                    downloadTask.snapshotEvents.listen((taskSnapshot) {
+                                    final downloadTask =
+                                        islandRef.writeToFile(file);
+                                    downloadTask.snapshotEvents
+                                        .listen((taskSnapshot) {
                                       switch (taskSnapshot.state) {
                                         case TaskState.running:
-                                        // TODO: Handle this case.
+                                          // TODO: Handle this case.
                                           break;
                                         case TaskState.paused:
-                                        // TODO: Handle this case.
+                                          // TODO: Handle this case.
                                           break;
                                         case TaskState.success:
-                                        // TODO: Handle this case.
+                                          // TODO: Handle this case.
                                           break;
                                         case TaskState.canceled:
-                                        // TODO: Handle this case.
+                                          // TODO: Handle this case.
                                           break;
                                         case TaskState.error:
-                                        // TODO: Handle this case.
+                                          // TODO: Handle this case.
                                           break;
                                       }
                                     });
 
-                                    final  user_data = MyUser(FirebaseAuth.instance.currentUser!.email.toString() ,docUser.get('name') , docUser.get('birthday'),docUser.get('is_male') , file);
+                                    final user_data = MyUser(
+                                        FirebaseAuth.instance.currentUser!.email
+                                            .toString(),
+                                        docUser.get('name'),
+                                        docUser.get('birthday'),
+                                        docUser.get('is_male'),
+                                        file);
 
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/mainScreen',
-                                        arguments: user_data
-                                    );
+                                    Navigator.pushNamed(context, '/mainScreen',
+                                        arguments: user_data);
                                   } on FirebaseAuthException catch (e) {
                                     if (e.code == 'user-not-found') {
                                       setState(() {
@@ -219,7 +232,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                       });
                                     }
                                   } catch (e) {
-                                    print(e);
+                                    setState(() {
+                                      isEmailError = true;
+                                      isPasswordError = true;
+                                    });
                                   }
                                 },
                                 style: ButtonStyle(
