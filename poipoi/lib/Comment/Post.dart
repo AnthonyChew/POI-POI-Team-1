@@ -5,7 +5,7 @@ class Post {
   String title;
   List<String> imageURL;
   bool click = false;
-  CommentSection page = CommentSection();
+  //CommentSection page = CommentSection();
 
   double ratings;
   bool liked;

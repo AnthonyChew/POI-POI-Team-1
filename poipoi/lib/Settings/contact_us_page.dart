@@ -57,7 +57,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
           if (await launchUrl(sms)){
           } else { throw 'Error occurred trying to message that number.';
           }},
-          icon: const Icon(Icons.whatsapp),
+          icon: const Icon(Icons.message),
           style: ElevatedButton.styleFrom(
             primary: Colors.blue,
             padding: EdgeInsets.all(20),
