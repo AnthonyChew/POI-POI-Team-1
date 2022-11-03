@@ -11,6 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:poipoi/Settings/MyUser.dart';
 import 'HomePage.dart';
+import 'package:poipoi/Model/GlobalData.dart' as gbdata;
 //import 'FindBuddyPage.dart';
 import 'mapLocation.dart';
 import 'FavouritePage.dart';
@@ -29,8 +30,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  List<Map> healthyEateryDate = [];
-  List<Map> parkDate = [];
+
 
   static const List<Widget> _appBarOptions = <Widget>[
     Text('HOME', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans', letterSpacing:2.0,)),
@@ -88,7 +88,7 @@ class _MainScreenState extends State<MainScreen> {
           Map<dynamic, dynamic> map = snapshot.docs[i].data();
 
           var points = map['coordinates'] as GeoPoint;
-          healthyEateryDate.add({"id":i.toString() ,"name": map['NAME'],"level":map['ADDRESSFLOORNUMBER'],
+          gbdata.healthyEateryDate.add({"id":i.toString() ,"name": map['NAME'],"level":map['ADDRESSFLOORNUMBER'],
                       "latlong" : LatLng(points.latitude , points.longitude) ,
           "info": InfoWindow(
           title: map["ADDRESSTYPE"],
@@ -105,7 +105,7 @@ class _MainScreenState extends State<MainScreen> {
           Map<dynamic, dynamic> map = snapshot.docs[i].data();
 
           var points = map['coordinates'] as GeoPoint;
-          parkDate.add({"id":i.toString() ,"name": snapshot.docs[i].id,"level":map['ADDRESSFLOORNUMBER'],
+          gbdata.parkDate.add({"id":i.toString() ,"name": snapshot.docs[i].id,"level":map['ADDRESSFLOORNUMBER'],
             "latlong" : LatLng(points.latitude , points.longitude) ,
             "info": InfoWindow(
               title: map["ADDRESSSTREETNAME"],
@@ -125,7 +125,8 @@ class _MainScreenState extends State<MainScreen> {
     await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
-      print("My curr location is :" + position.longitude.toString() + "," + position.latitude.toString());
+          gbdata.position = position;
+      print("\n\n\n\nMy curr location is :" + gbdata.position.longitude.toString() + "," + gbdata.position.latitude.toString() + "\n\n\n\n");
     }).catchError((e) {
       debugPrint(e);
     });

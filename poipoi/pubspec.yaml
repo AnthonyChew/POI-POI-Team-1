@@ -48,6 +48,7 @@ dependencies:
   url_launcher: ^6.1.5
   geocoding: ^2.0.5
   geolocator: ^8.2.0
+  flutter_rating_bar: ^4.0.1
 
 dev_dependencies:
   flutter_test:
