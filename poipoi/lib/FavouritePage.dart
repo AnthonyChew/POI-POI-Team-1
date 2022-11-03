@@ -9,12 +9,15 @@ import 'Model/filter.dart';
 import 'HistoryPage.dart';
 
 
+
 class FavouritePage extends StatefulWidget {
   @override
   State<FavouritePage> createState() => _FavouritePageState();
 }
 
 class _FavouritePageState extends State<FavouritePage> {
+
+  //load fav locations here i.e. if liked == true
   List<Location> locations=[
     Location('Zhenghua Nature Park'),
     Location('Clementi ActiveSG Stadium'),

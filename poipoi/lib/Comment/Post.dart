@@ -6,9 +6,12 @@ class Post {
   List<String> imageURL;
   bool click = false;
   CommentSection page = CommentSection();
-  int rating = 0; //retrieve from database
 
-  Post({required this.title,  required this.imageURL, });
+  double ratings;
+  bool liked;
+  Post({required this.title,  required this.imageURL, required this.ratings, required this.liked});
 
-  void setClick(bool press){ click = press;}
+
+
+  void setClick(bool press){ click = press;}//???????????????
 }

@@ -2,8 +2,7 @@
 Main Screen.
 Consist of App Bar and Bottom Navigation Bar which will show regardless of which tab
 the user is in.
-But within tabs can make it disappear by using push.Navigator() (see Screen2) if necessary
---> Maybe for AroundMePage
+
  */
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,7 +34,6 @@ class _MainScreenState extends State<MainScreen> {
 
   static const List<Widget> _appBarOptions = <Widget>[
     Text('HOME', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans', letterSpacing:2.0,)),
-   // Text('FIND BUDDY', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans',letterSpacing:2.0,)),
     Text('AROUND ME', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans',letterSpacing:2.0,)),
     Text('FAVOURITES', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'NotoSans',letterSpacing:2.0,)),
   ];
@@ -43,7 +41,6 @@ class _MainScreenState extends State<MainScreen> {
 
   List<Widget> _widgetOptions = <Widget>[
     HomePage(),
-  //  FindBuddyPage(),
     AroundMePage(),
     FavouritePage(),
   ];
@@ -213,15 +210,7 @@ class _MainScreenState extends State<MainScreen> {
     label: "Home",
     ),
 
-    /// Find Buddy
-    // BottomNavigationBarItem(
-    // icon: Icon(Icons.people, size: 40.0),
-    // backgroundColor: Colors.blue,
-    // label: "Find Buddy",
-    // ),
-
     /// Around Me
-
     BottomNavigationBarItem(
     icon: Icon(Icons.pin_drop, size: 40.0),
     backgroundColor: Colors.blue,
