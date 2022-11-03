@@ -128,7 +128,8 @@ class _AroundMePageState extends State<AroundMePage> {
                       flex: 1,
                       child: Row(
                         children: [
-                          Expanded(
+                          if (showLocation)
+                            Expanded(
                             child: ElevatedButton(
                               onPressed: () {
                                 setState(()
@@ -139,10 +140,26 @@ class _AroundMePageState extends State<AroundMePage> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white54,
                               ),
-                              child: const Icon(Icons.account_circle, color: Colors.black),
+                              child: const Icon(Icons.block, color: Colors.black),
                             ),
-                          ),
-                          Expanded(
+                          )
+                          else if (!showLocation)
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  setState(()
+                                  {
+                                    showLocation = !showLocation;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white54,
+                                ),
+                                child: const Icon(Icons.add, color: Colors.black),
+                              ),
+                            ),
+                          if (locationOrAvatar)
+                            Expanded(
                             child: ElevatedButton(
                               onPressed: () {
                                 setState(()
@@ -153,9 +170,24 @@ class _AroundMePageState extends State<AroundMePage> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white54,
                               ),
-                              child: const Icon(Icons.accessibility_new, color: Colors.black),
+                              child: const Icon(Icons.dinner_dining, color: Colors.black),
                             ),
-                          ),
+                          )
+                          else if (!locationOrAvatar)
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  setState(()
+                                  {
+                                    locationOrAvatar = !locationOrAvatar;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white54,
+                                ),
+                                child: const Icon(Icons.directions_run_outlined, color: Colors.black),
+                              ),
+                            ),
                         ],
                       ),
                     ),
