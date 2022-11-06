@@ -58,10 +58,14 @@ class _AroundMePageState extends State<AroundMePage> {
   );
   bool showLocation = true;
   bool locationOrAvatar = true;
+  int countpark = 1;
+  int countfood = 1;
+
 
   @override
   Widget build(BuildContext context) {
-
+    if (countpark == 15) countpark = 1;
+    if (countfood == 15) countfood = 1;
     return Scaffold(
 
         backgroundColor: Colors.white60,
@@ -71,39 +75,6 @@ class _AroundMePageState extends State<AroundMePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
-                flex: 1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 300.0,
-                      padding: EdgeInsets.all(10.0),
-                      child: const TextField(
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          ),
-                          border: OutlineInputBorder(),
-                          labelText: 'Your Location',
-                          hintText: 'Your Location',
-                          fillColor: Colors.pink,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.search,
-                      ),
-                      color: Colors.black,
-                    )
-                  ],
-                ),
-              ),
               Expanded(
                 flex: 7,
                 child: GoogleMap(
@@ -128,7 +99,8 @@ class _AroundMePageState extends State<AroundMePage> {
                       flex: 1,
                       child: Row(
                         children: [
-                          Expanded(
+                          if (showLocation)
+                            Expanded(
                             child: ElevatedButton(
                               onPressed: () {
                                 setState(()
@@ -139,10 +111,26 @@ class _AroundMePageState extends State<AroundMePage> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white54,
                               ),
-                              child: const Icon(Icons.account_circle, color: Colors.black),
+                              child: const Icon(Icons.block, color: Colors.black),
                             ),
-                          ),
-                          Expanded(
+                          )
+                          else if (!showLocation)
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  setState(()
+                                  {
+                                    showLocation = !showLocation;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white54,
+                                ),
+                                child: const Icon(Icons.add, color: Colors.black),
+                              ),
+                            ),
+                          if (locationOrAvatar)
+                            Expanded(
                             child: ElevatedButton(
                               onPressed: () {
                                 setState(()
@@ -153,9 +141,24 @@ class _AroundMePageState extends State<AroundMePage> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white54,
                               ),
-                              child: const Icon(Icons.accessibility_new, color: Colors.black),
+                              child: const Icon(Icons.dinner_dining, color: Colors.black),
                             ),
-                          ),
+                          )
+                          else if (!locationOrAvatar)
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  setState(()
+                                  {
+                                    locationOrAvatar = !locationOrAvatar;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white54,
+                                ),
+                                child: const Icon(Icons.directions_run_outlined, color: Colors.black),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -168,10 +171,10 @@ class _AroundMePageState extends State<AroundMePage> {
                               itemCount: gbdata.parkDate.length,
                               itemBuilder:(context, index){
                                 if (
-                                  (me.latitude - gbdata.parkDate[index]['latlong'].latitude) < 0.033 &&
-                                  (me.latitude - gbdata.parkDate[index]['latlong'].latitude) > -0.033 &&
-                                  (me.longitude - gbdata.parkDate[index]['latlong'].longitude) < 0.033 &&
-                                  (me.longitude - gbdata.parkDate[index]['latlong'].longitude) > -0.033
+                                  (me.latitude - gbdata.parkDate[index]['latlong'].latitude) < 0.040 &&
+                                  (me.latitude - gbdata.parkDate[index]['latlong'].latitude) > -0.040 &&
+                                  (me.longitude - gbdata.parkDate[index]['latlong'].longitude) < 0.040 &&
+                                  (me.longitude - gbdata.parkDate[index]['latlong'].longitude) > -0.040
                                 ) {
                                   return Card(
                                     shape: RoundedRectangleBorder(
@@ -185,7 +188,7 @@ class _AroundMePageState extends State<AroundMePage> {
                                         children: [
                                           Expanded(
                                             flex: 4,
-                                            child: Image.asset(gbdata.parkDate[index]['image']),
+                                            child: Image.asset("assets/images/park${(index % 13)}.jpg"),
                                           ),
                                           Expanded(
                                               flex: 1,
@@ -204,7 +207,7 @@ class _AroundMePageState extends State<AroundMePage> {
                                                           children: [
                                                             Text("${gbdata.parkDate[index]['id']}"),
                                                             Text("${gbdata.parkDate[index]['latlong']}"),
-                                                            Image.asset("${gbdata.parkDate[index]['image']}")
+                                                            Image.asset("assets/images/park${countpark++ % 15 + 1}.jpg")
                                                           ]
                                                       ),
                                                     ));
@@ -240,10 +243,10 @@ class _AroundMePageState extends State<AroundMePage> {
                             itemCount: gbdata.healthyEateryDate.length,
                             itemBuilder: (context, index) {
                               if (
-                                (me.latitude - gbdata.healthyEateryDate[index]['latlong'].latitude) < 0.033 &&
-                                (me.latitude - gbdata.healthyEateryDate[index]['latlong'].latitude) > -0.033 &&
-                                (me.longitude - gbdata.healthyEateryDate[index]['latlong'].longitude) < 0.033 &&
-                                (me.longitude - gbdata.healthyEateryDate[index]['latlong'].longitude) > -0.033
+                                (me.latitude - gbdata.healthyEateryDate[index]['latlong'].latitude) < 0.040 &&
+                                (me.latitude - gbdata.healthyEateryDate[index]['latlong'].latitude) > -0.040 &&
+                                (me.longitude - gbdata.healthyEateryDate[index]['latlong'].longitude) < 0.040 &&
+                                (me.longitude - gbdata.healthyEateryDate[index]['latlong'].longitude) > -0.040
                               ) {
                                 return Card(
                                   shape: RoundedRectangleBorder(
@@ -257,14 +260,8 @@ class _AroundMePageState extends State<AroundMePage> {
                                       children: [
                                         Expanded(
                                           flex: 4,
-                                          // child: CircleAvatar(
-                                          //   backgroundImage: AssetImage(gbdata.healthyEateryDate[index]['image']),
-                                          //   radius: 120.0,
-                                          //   backgroundColor: Colors.black,
-                                          // )
                                             child: Image.asset(
-                                              gbdata.healthyEateryDate[index]['image'],
-                                              color: Colors.black26,
+                                              "assets/images/food${(index % 13)}.jpg",
                                             ),
                                         ),
                                         Expanded(
@@ -280,12 +277,12 @@ class _AroundMePageState extends State<AroundMePage> {
                                               ),
                                               onPressed: () {
                                                 showDialog(context: context, builder: (context) => AlertDialog(
-                                                  title: Text('${gbdata.parkDate[index]['name']}'),
+                                                  title: Text('${gbdata.healthyEateryDate[index]['name']}'),
                                                   content: Column(
                                                     children: [
                                                       Text("${gbdata.healthyEateryDate[index]['id']}"),
                                                       Text("${gbdata.healthyEateryDate[index]['latlong']}"),
-                                                      Image.asset("${gbdata.healthyEateryDate[index]['image']}"),
+                                                      Image.asset("assets/images/food${countfood++ % 15 + 1}.jpg"),
                                                     ],
                                                   ),
                                                 ));
@@ -339,17 +336,4 @@ class _AroundMePageState extends State<AroundMePage> {
     return _markers;
   }
 
-  void showDetails(int i) {
-    showDialog(context: context, builder: (context) => AlertDialog(
-      title: Text('${gbdata.healthyEateryDate[i]['name']}'),
-      content: Column(
-        children: [
-          Text('${gbdata.healthyEateryDate[i]['id']}'),
-          Text('${gbdata.healthyEateryDate[i]['level']}'),
-          Text('${gbdata.healthyEateryDate[i]['latlong']}'),
-          Text('${gbdata.healthyEateryDate[i]['image']}'),
-        ],
-      ),
-    ));
-  }
 }

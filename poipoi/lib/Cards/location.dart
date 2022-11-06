@@ -1,7 +1,7 @@
-class Location{
+class MyLocation{
 
   String name = '' ;
-  Location(String name){
+  MyLocation(String name){
     this.name = name;
   }
 

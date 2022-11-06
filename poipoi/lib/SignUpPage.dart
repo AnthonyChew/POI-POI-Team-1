@@ -763,14 +763,10 @@ class signUp extends State<SignUpPage> {
                                             global.uuid = FirebaseAuth
                                                 .instance.currentUser?.uid;
 
-                                            final docUser = FirebaseFirestore
-                                                .instance
-                                                .collection("user_data")
-                                                .doc(FirebaseAuth
-                                                    .instance.currentUser?.uid);
+                                            final docUser = FirebaseFirestore .instance .collection("user_data").doc(FirebaseAuth.instance.currentUser?.uid);
 
-                                            final storageRef =
-                                                FirebaseStorage.instance.ref();
+
+                                            final storageRef = FirebaseStorage.instance.ref();
                                             final imgRef = storageRef.child(
                                                 FirebaseAuth
                                                     .instance.currentUser!.uid

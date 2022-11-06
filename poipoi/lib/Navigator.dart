@@ -6,11 +6,12 @@ the user is in.
  */
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:poipoi/Settings/MyUser.dart';
-import 'HomePage.dart';
+import 'MainPage.dart';
 import 'package:poipoi/Model/GlobalData.dart' as gbdata;
 //import 'FindBuddyPage.dart';
 import 'mapLocation.dart';
@@ -19,6 +20,7 @@ import 'Settings/SettingsPage.dart' as settings;
 import 'HistoryPage.dart' as history;
 import 'Model/filter.dart' as filter;
 import 'package:geocoding/geocoding.dart';
+import 'Cards/location.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -46,7 +48,7 @@ class _MainScreenState extends State<MainScreen> {
   ];
 
   void _onItemTapped(int index) async{
-
+    await onload();
     setState(() {
       _selectedIndex = index;
     });
@@ -88,7 +90,7 @@ class _MainScreenState extends State<MainScreen> {
           Map<dynamic, dynamic> map = snapshot.docs[i].data();
 
           var points = map['coordinates'] as GeoPoint;
-          gbdata.healthyEateryDate.add({"id":i.toString() ,"name": map['NAME'],"level":map['ADDRESSFLOORNUMBER'],
+          gbdata.healthyEateryDate.add({"id":snapshot.docs[i].id ,"name": map['NAME'],"level":map['ADDRESSFLOORNUMBER'],
                       "latlong" : LatLng(points.latitude , points.longitude) ,
           "info": InfoWindow(
           title: map["ADDRESSTYPE"],
@@ -105,7 +107,7 @@ class _MainScreenState extends State<MainScreen> {
           Map<dynamic, dynamic> map = snapshot.docs[i].data();
 
           var points = map['coordinates'] as GeoPoint;
-          gbdata.parkDate.add({"id":i.toString() ,"name": snapshot.docs[i].id,"level":map['ADDRESSFLOORNUMBER'],
+          gbdata.parkDate.add({"id":snapshot.docs[i].id ,"name": snapshot.docs[i].id,"level":map['ADDRESSFLOORNUMBER'],
             "latlong" : LatLng(points.latitude , points.longitude) ,
             "info": InfoWindow(
               title: map["ADDRESSSTREETNAME"],
@@ -116,6 +118,29 @@ class _MainScreenState extends State<MainScreen> {
       }
     });
     getPosition();
+
+    onload();
+
+  }
+
+  Future<void> onload() async
+  {
+
+    gbdata.locations = [];
+    DocumentSnapshot<Map<String, dynamic>> map = await FirebaseFirestore.instance.collection("user_data").doc(FirebaseAuth.instance.currentUser?.uid).get();
+
+    List<dynamic> likeLocation = map["likeLocation"];
+
+    for (int i = 0; i <gbdata.healthyEateryDate.length;i++ )
+    {
+      for(int j = 0; j < likeLocation.length; j++)
+      {
+        if(gbdata.healthyEateryDate[i]['id'] == likeLocation[j])
+        {
+          gbdata.locations.add(MyLocation(gbdata.healthyEateryDate[i]['name']));
+        }
+      }
+    }
   }
 
   void getPosition() async

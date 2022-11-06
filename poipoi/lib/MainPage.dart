@@ -1,297 +1,346 @@
-import 'dart:io';
-
+/*
+HomePage:
+First tab shown by default when users login successfully
+Consists of a list of posts(or is it supposed to be just locations idk)
+Still need to figure out how users gonna interact with the posts
+ */
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:poipoi/Settings/SettingsPage.dart' as setting;
-import 'package:poipoi/SignUpPage.dart' as signUp;
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:poipoi/Model/GlobalData.dart' as global;
-import 'Navigator.dart' as mainScreen;
-import 'Settings/MyUser.dart';
-import 'Settings/EditProfilePage.dart';
-import 'package:path/path.dart';
-import 'package:poipoi/Comment/CommentSection.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'dart:async';
+import 'dart:ui';
+import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'Comment/CommentSection.dart';
 
-void main() {
-  runApp(const MyApp());
-  Firebase.initializeApp();
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class _HomePageState extends State<HomePage> {
+  final RoundedLoadingButtonController _btnController1 = RoundedLoadingButtonController();
 
-  // This widget is the root of your application.
+  void _doSomething(RoundedLoadingButtonController controller) async {
+    Timer(Duration(seconds: 10), () {
+      controller.success();
+    });
+  }
+
+  late List posts = [
+    'assets/images/pp1.JPG',
+    'assets/images/pp2.jpg',
+    'assets/images/pp1.JPG'
+  ];
+
+  _commentButtonPressed(Object postid) {
+    setState(() {
+      Navigator.push(
+          context, MaterialPageRoute(
+          builder: (context) => CommentSection(postid: postid)));
+    });
+  }
+
+  bool sortByRatings = false;
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'POI POI',
-      theme: ThemeData(
-          colorScheme: ThemeData().colorScheme.copyWith(),
-          iconTheme: IconThemeData(color: Colors.white),
-          fontFamily: GoogleFonts.openSans().fontFamily),
-      home: const MyHomePage(title: 'Home Page'),
-      routes: <String, WidgetBuilder>{
-        "/signup": (BuildContext context) =>
-            signUp.SignUpPage(title: 'Sign Up'),
-        "/mainScreen": (BuildContext context) =>
-            mainScreen.MainScreen(title: 'Main Screen'),
-        "/settings": (BuildContext context) =>
-            setting.Settings(title: 'Settings'),
-        "/editProfile": (BuildContext context) => EditProfilePage(),
-    //    "/commentPage": (BuildContext context) => CommentSection(),
-        //add more routes here
-      },
+    return Container(
+      child:
+      Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    alignment: Alignment.center,
+                    image: AssetImage('assets/images/try.jpg',),
+                    fit: BoxFit.cover,
+                  )
+              ),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
+                child: Center(
+                ),
+              ),
+            ),
+            Flex(
+                direction: Axis.vertical,
+                children: [
+                  Expanded(child:
+                  StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance.collection(
+                          'healthy_eatery').snapshots(),
+                      builder: (context, snapshot) {
+                        // Map<dynamic,dynamic> data = null;
+                        //  FirebaseFirestore.instance.collection('gymLocation').get().then((snapshot) async{
+                        //    if(snapshot.docs.isNotEmpty)
+                        //      {
+                        //         data = snapshot.docs[0].data();
+                        //      }
+                        //  });
+                        //
+                        //  data["rating"] = 5.0;
+                        if (snapshot.hasError) {
+                          return Text('Something went wrong');
+                        }
+                        //else if(snapshot.hasData || snapshot.data!=null){
+                        return _buildPostList(snapshot);
+                        // }
+                      }
+                  ))
+                ]
+            ),
+          ]
+      ),
     );
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  bool isEmailError = false, isPasswordError = false;
-  final emailController = TextEditingController();
-  final passwordContoller = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Stack(
-      children: <Widget>[
-        Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: const AssetImage("assets/images/main_bg.jpg"),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.6), BlendMode.darken),
-                alignment: Alignment(-0.3, 0)),
+  Widget _ratingBar(double rate) {
+    return RatingBar.builder(
+      initialRating: rate,
+      direction: Axis.horizontal,
+      allowHalfRating: true,
+      itemCount: 5,
+      itemPadding: EdgeInsets.symmetric(horizontal: 0.5),
+      itemBuilder: (context, _) =>
+          Icon(
+            Icons.star,
+            color: Colors.amber,
+            size: 1.0,
           ),
-        ),
-        Container(
-            width: 50.00,
-            height: 50.00,
-            margin: EdgeInsets.only(top: 30),
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: ExactAssetImage('assets/images/logo.png'),
-                fit: BoxFit.contain,
-              ),
-            )),
-        Center(
+      ignoreGestures: true,
+      onRatingUpdate: (rating) {},
+    );
+  }
+
+  Widget _buildPostList(snapshot) {
+    int countfood = 1;
+    return ListView.builder(
+        itemCount: snapshot.data?.docs.length,
+        itemBuilder: (context, index) {
+          List <QueryDocumentSnapshot> items = [];
+          items = snapshot.data?.docs;
+          items.sort((a, b) {
+            if (sortByRatings) {
+              return b["rating"].compareTo(a["rating"]);
+            }
+            return a["NAME"].toLowerCase().compareTo(b["NAME"].toLowerCase());
+          });
+          QueryDocumentSnapshot<Object?>? documentSnapshot = items[index];
+          return Card(
+            color: Colors.black.withOpacity(0.8),
+            margin: EdgeInsets.symmetric(
+              vertical: 10.0, horizontal: 10.0,),
             child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Spacer(flex: 2),
-            Expanded(
-              flex: 8,
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    FractionallySizedBox(
-                        widthFactor: 0.8,
-                        child: Column(
-                          children: [
-                            TextField(
-                              style: TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(width: 3, color: Colors.white),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20)),
+                children: [
+                  Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5.0),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                    flex: 1,
+                                    child: const SizedBox(width: 10.0)
                                 ),
-                                labelStyle: TextStyle(
-                                  color: Colors.white, //<-- SEE HERE
-                                ),
-                                labelText: 'Email',
-                                errorText:
-                                    isEmailError ? "Email not found." : null,
-                              ),
-                              controller: emailController,
-                            ),
-                            SizedBox(height: 10),
-                            TextField(
-                              style: TextStyle(color: Colors.white),
-                              obscureText: true,
-                              enableSuggestions: false,
-                              autocorrect: false,
-                              decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(width: 3, color: Colors.white),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20)),
-                                ),
-                                labelStyle: TextStyle(
-                                  color: Colors.white,
-                                ),
-                                labelText: 'Password',
-                                errorText:
-                                    isPasswordError ? "Wrong password." : null,
-                              ),
-                              controller: passwordContoller,
-                            ),
-                            SizedBox(height: 10),
-                            FractionallySizedBox(
-                              widthFactor: 1,
-                              child: OutlinedButton(
-                                onPressed: () async {
-                                  try {
-                                    UserCredential userCredential = await global
-                                        .auth
-                                        .signInWithEmailAndPassword(
-                                            email: emailController.text,
-                                            password: passwordContoller.text);
-
-                                    final docUser = await FirebaseFirestore
-                                        .instance
-                                        .collection("user_data")
-                                        .doc(FirebaseAuth
-                                            .instance.currentUser?.uid)
-                                        .get();
-
-                                    final storageRef =
-                                        FirebaseStorage.instance.ref();
-                                    final islandRef = storageRef.child(
-                                        FirebaseAuth.instance.currentUser!.uid);
-
-                                    String? path;
-                                    var _appDocumentsDirectory =
-                                        await getApplicationDocumentsDirectory();
-                                    path = _appDocumentsDirectory.path;
-
-                                    final String fileName = basename(
-                                        FirebaseAuth.instance.currentUser!.uid +
-                                            "jpg"); // Filename without extension
-                                    final filePath = '$path/$fileName';
-                                    final file = File(filePath);
-
-                                    final downloadTask =
-                                        islandRef.writeToFile(file);
-                                    downloadTask.snapshotEvents
-                                        .listen((taskSnapshot) {
-                                      switch (taskSnapshot.state) {
-                                        case TaskState.running:
-                                          // TODO: Handle this case.
-                                          break;
-                                        case TaskState.paused:
-                                          // TODO: Handle this case.
-                                          break;
-                                        case TaskState.success:
-                                          // TODO: Handle this case.
-                                          break;
-                                        case TaskState.canceled:
-                                          // TODO: Handle this case.
-                                          break;
-                                        case TaskState.error:
-                                          // TODO: Handle this case.
-                                          break;
-                                      }
-                                    });
-
-                                    final user_data = MyUser(
-                                        FirebaseAuth.instance.currentUser!.email
-                                            .toString(),
-                                        docUser.get('name'),
-                                        docUser.get('birthday'),
-                                        docUser.get('is_male'),
-                                        file);
-
-                                    Navigator.pushNamed(context, '/mainScreen',
-                                        arguments: user_data);
-                                  } on FirebaseAuthException catch (e) {
-                                    if (e.code == 'user-not-found') {
-                                      setState(() {
-                                        isEmailError = true;
-                                      });
-                                    }
-                                    if (e.code == 'wrong-password') {
-                                      setState(() {
-                                        isPasswordError = true;
-                                      });
-                                    }
-                                  } catch (e) {
-                                    setState(() {
-                                      isEmailError = true;
-                                      isPasswordError = true;
-                                    });
-                                  }
-                                },
-                                style: ButtonStyle(
-                                  foregroundColor:
-                                      MaterialStateProperty.all(Colors.black),
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Colors.white),
-                                  shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30.0))),
-                                ),
-                                child: const Text(
-                                  "Login",
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.bold,
+                                Expanded(
+                                  flex: 5,
+                                  child: Container(
+                                    child: Text((documentSnapshot != null)
+                                        ? (documentSnapshot["NAME"])
+                                        : "",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Colors.white,
+                                        fontSize: 25.0,
+                                        fontFamily: 'NotoSans',
+                                        fontWeight: FontWeight.bold,),
+                                    ),
+                                  ),
+                                ), Expanded(
+                                  flex: 1,
+                                  child: SizedBox(
+                                    width: 10.0,
+                                    child: PopupMenuButton(
+                                      icon: Icon(
+                                          Icons.more_vert, color: Colors.white),
+                                      iconSize: 32.0,
+                                      color: Colors.white,
+                                      itemBuilder: (context) =>
+                                      [
+                                        PopupMenuItem<int>(
+                                          value: 0,
+                                          child: (documentSnapshot != null)
+                                              ? (((documentSnapshot['liked']) !=
+                                              0) ? Text(
+                                              "Remove from Favourites",
+                                              style: TextStyle(
+                                                  color: Colors.black)) : Text(
+                                              "Add to Favourites",
+                                              style: TextStyle(
+                                                  color: Colors.black)))
+                                              : Text(""),
+                                        ),
+                                        PopupMenuItem<int>(
+                                          value: 1,
+                                          child: sortByRatings ? Text(
+                                              "Sort A-Z", style: TextStyle(
+                                              color: Colors.black)) : Text(
+                                              "Sort by Ratings",
+                                              style: TextStyle(
+                                                  color: Colors.black)),
+                                        ),
+                                      ],
+                                      onSelected: (item) {
+                                        switch (item) {
+                                          case 0:
+                                            setState(() { //-------------------------------------------------> database need to update too to save for next login(documentSnapshot != null?
+                                              (documentSnapshot != null)
+                                                  ? ((documentSnapshot['liked']) !=
+                                                  0
+                                                  ? FirebaseFirestore.instance
+                                                  .collection('gymLocation')
+                                                  .doc(documentSnapshot.id)
+                                                  .update({'liked': 0})
+                                                  : FirebaseFirestore.instance
+                                                  .collection('gymLocation')
+                                                  .doc(documentSnapshot.id)
+                                                  .update({'liked': 1}))
+                                                  : "";
+                                              //FirebaseFirestore.instance
+                                              //                 .collection('healthyEateries')
+                                              //                 .add({'liked': documentSnapshot[liked]})
+                                            });
+                                            break;
+                                          case 1:
+                                            setState(() {
+                                              sortByRatings = !sortByRatings;
+                                            });
+                                            break;
+                                        }
+                                      },
+                                    ),
                                   ),
                                 ),
+                              ]
+                          ),
+                        ), Stack(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.fromLTRB(
+                                    0.0, 10.0, 0.0, 10.0),
+                                child: ImageSlideshow(
+                                  indicatorColor: Colors.white,
+                                  // onPageChanged: (value) { debugPrint('Page changed: $value');},
+                                  isLoop: false,
+                                  children: List.generate(
+                                      posts.length, (i) {
+                                    return
+                                      Image.asset(
+                                        "assets/images/food${countfood++ % 15 +
+                                            1}.jpg",
+                                        fit: BoxFit.cover,
+                                      );
+                                  }
+                                  ),
+                                ),),
+                              Container(
+                                padding: EdgeInsets.only(top: 8.0),
+                                child: _ratingBar((documentSnapshot != null)
+                                    ? (documentSnapshot["rating"].toDouble())
+                                    : (0.0)),
+                              )
+                            ]
+                        ),
+                      ]
+                  ), Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(bottom: 5.0),
+                        child: Row(
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 5.0, right: 5.0, bottom: 2.0),
+                              child: RoundedLoadingButton(
+                                width: 60.0,
+                                controller: _btnController1,
+                                successIcon: Icons.pin_drop,
+                                failedIcon: Icons.wrong_location,
+                                child: Container(
+                                  margin: EdgeInsets.only(right: 5.0,),
+                                  padding: const EdgeInsets.fromLTRB(
+                                      10.0, 2.0, 5.0, 5.0),
+                                  child: Row(
+                                      children: [
+                                        Icon(Icons.directions),
+                                        Text('Directions',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: 'NotoSans',
+                                              fontWeight: FontWeight
+                                                  .bold,)),
+                                      ]
+                                  ),
+                                ),
+                                onPressed: () =>
+                                    _doSomething(_btnController1),
                               ),
                             ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                const Text(
-                                  'By clicking Log In, you agree with our Terms. Learn how we process your data in our Privacy Policy amd Cookies Policy.',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16),
+                            RoundedLoadingButton(
+                              width: 20.0,
+                              controller: _btnController1,
+                              successIcon: Icons.pin_drop,
+                              failedIcon: Icons.wrong_location,
+                              color: Colors.white,
+                              valueColor: Colors.blue,
+                              errorColor: Colors.white,
+                              successColor: Colors.white,
+                              child: Container(
+                                margin: EdgeInsets.only(right: 5.0,),
+                                padding: const EdgeInsets.fromLTRB(
+                                    10.0, 2.0, 5.0, 5.0),
+                                child: Row(
+                                    children: [
+                                      Icon(Icons.gps_fixed_outlined,
+                                        color: Colors.blue,),
+                                      Text('Start', style: TextStyle(
+                                        color: Colors.blue,
+                                        fontFamily: 'NotoSans',
+                                        fontWeight: FontWeight.bold,)),
+                                    ]
                                 ),
-                                SizedBox(height: 10),
-                                const Text(
-                                  'Don\'t have an account yet?.',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16),
-                                ),
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.pushNamed(
-                                        context,
-                                        '/signup',
-                                      );
-                                    },
-                                    child: const Text("Sign Up",
-                                        style: const TextStyle(
-                                            color: Colors.blue)))
-                              ],
-                            )
+                              ),
+                              onPressed: () =>
+                                  _doSomething(_btnController1),
+                            ),
                           ],
-                        )),
-                  ]),
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(right: 10.0),
+                        child: IconButton(
+                          iconSize: 40.0,
+                          onPressed: () {
+                            setState(() {
+                              // posts[index].setClick(true);
+                              _commentButtonPressed(
+                                  (documentSnapshot != null) ? documentSnapshot
+                                      .id : 0);
+                            });
+                          }, color: Colors.grey,
+                          icon: Icon(Icons.chat_bubble_rounded),
+                        ),
+                      ),
+                    ],
+                  ),
+                ]
             ),
-          ],
-        ))
-      ],
-    ));
+          );
+        }
+    );
   }
 }

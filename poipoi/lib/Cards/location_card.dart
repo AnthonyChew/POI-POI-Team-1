@@ -4,7 +4,7 @@ import 'location.dart';
 
 class LocationCard extends StatelessWidget {
 
-  final Location location;
+  final MyLocation location;
   final VoidCallback? delete;
   LocationCard({ required this.location, this.delete });
 
