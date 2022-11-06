@@ -159,7 +159,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user_data = ModalRoute.of(context)!.settings.arguments as MyUser;
+    gbdata.user_data = ModalRoute.of(context)!.settings.arguments as MyUser;
 
     return Scaffold(
 
@@ -206,7 +206,7 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.pushNamed(
                   context,
                   '/settings',
-                  arguments: user_data);
+                  arguments: gbdata.user_data);
 
             });
           },

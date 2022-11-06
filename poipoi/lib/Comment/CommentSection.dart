@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'Comment.dart';
+import 'package:poipoi/Model/GlobalData.dart' as gbdata;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 //left need get user profile pic and how to rebuild builder??
@@ -26,11 +27,16 @@ class _CommentSectionState extends State<CommentSection> {
   void initState(){
     super.initState();
     _commentsList = getList();
+<<<<<<< Updated upstream
     //print(widget.postid);
+=======
+
+>>>>>>> Stashed changes
 
   }
 
   void _addComment(Comment val){
+<<<<<<< Updated upstream
       //print("\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n");
       CollectionReference docRef = FirebaseFirestore.instance.collection("comments").doc( widget.postid + "comment").collection("1");
      // print("\n\n-----------------------------------" + postid +"----------------------------------\n\n");
@@ -101,15 +107,97 @@ class _CommentSectionState extends State<CommentSection> {
     return Future.value(commentsList);
 
 
+=======
+    //print("\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n");
+    CollectionReference docRef = FirebaseFirestore.instance.collection("comments").doc( widget.postid + "comment").collection("1");
+    // print("\n\n-----------------------------------" + postid +"----------------------------------\n\n");
+
+    //DocumentReference docRef1 = FirebaseFirestore.instance.collection("healthy_eatery").doc(postid);
+    Map<String, String> comments={
+      "username": val.username,
+      "comments": val.comment,
+      "datetime": val.dateTimePosted,
+
+    };
+    docRef.add(comments);
+    //getList();
+    //
+    //   //FirebaseFirestore.instance.collection("healthy_eatery").doc(postid).set({"comments": '/comments/${postid + "comment"}' });
+    //   // setState(() {
+    //   //   _comments.add(val);
+    //   // });
+>>>>>>> Stashed changes
+  }
+
+
+  Future<List<Comment>> getList() async{
+    List<Comment> commentsList = [];
+    Map<dynamic, dynamic> mdata = new Map<dynamic,dynamic>();
+    // await Future.delayed(Duration(seconds: 3));
+
+    var snapshot = await FirebaseFirestore.instance
+        .collection("healthy_eatery")
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      for (int i = 0; i < snapshot.docs.length; i++) {
+        Map<dynamic, dynamic> map = snapshot.docs[i].data();
+        if (map.keys.contains("comments")) {
+          DocumentReference<Map<dynamic, dynamic>> map1 = map["comments"];
+          //print("${widget.postid}comment");
+          if(map1.id != "${widget.postid}comment") continue;
+          print("++++++++++++++++ ${map1.id}");
+
+          var snapshot = await FirebaseFirestore.instance
+              .collection("comments")
+              .get();
+
+          //    print("++++++++++++++++ ${snapshot.docs.length}");
+          for (int i = 0; i < snapshot.docs.length; i++) {
+            if (snapshot.docs[i].id == map1.id) {
+              //    print("++++++++++++++++ ${snapshot.docs[i].id}");
+
+              var test = await FirebaseFirestore.instance.collection("comments")
+                  .doc(map1.id).collection("1")
+                  .get();
+              var data = await test.docs;
+
+              for (int i = 0; i < data.length; i++) {
+                mdata = data[i].data();
+                print("Comemnts :" + mdata['comments'] + " Testdata:" +
+                    mdata['datetime']);
+
+
+                commentsList.add(Comment(username: gbdata.user_data.getName,
+                    comment: mdata['comments'],
+                    dateTimePosted: mdata['datetime'])
+                );
+
+
+<<<<<<< Updated upstream
+    //Future<List> commentsList = await _buildList();
+
+    return StreamBuilder<List<Comment>>(
+      stream:Stream.fromFuture(_commentsList),  //dk how rebuild and order or use _commentsList but this doesnt rebuild unless refresh page; but getList() will keep refreshing
+=======
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return Future.value(commentsList);
+
+
   }
 
 
   Widget _buildCommentList() {
 
-    //Future<List> commentsList = await _buildList();
-
-    return StreamBuilder<List<Comment>>(
-      stream:Stream.fromFuture(_commentsList),  //dk how rebuild and order or use _commentsList but this doesnt rebuild unless refresh page; but getList() will keep refreshing
+    return  StreamBuilder<List<Comment>>(
+      stream:  Stream.fromFuture(getList()),  //dk how rebuild and order or use _commentsList but this doesnt rebuild unless refresh page; but getList() will keep refreshing
+>>>>>>> Stashed changes
       builder: (ctx, snapshot) {
         // if (!snapshot.hasData) {
         //   return Container(
@@ -121,15 +209,27 @@ class _CommentSectionState extends State<CommentSection> {
         //List<Comment> comments = snapshot.data;
         switch (snapshot.connectionState) {
           case ConnectionState.done:
+<<<<<<< Updated upstream
+=======
+          //if(!snapshot.hasData) return Container();
+>>>>>>> Stashed changes
             return _buildListView(snapshot);
           default:
             return _buildLoadingScreen();
         }
       },
+<<<<<<< Updated upstream
     );
   }
   Widget _buildListView(AsyncSnapshot<List<Comment>> snapshot) {
 
+=======
+    ) ;
+
+  }
+  Widget _buildListView(AsyncSnapshot<List<Comment>> snapshot) {
+
+>>>>>>> Stashed changes
     return ListView.builder(
       itemBuilder: (ctx, idx) {
         return _buildCommentItem( snapshot.data![idx] );
@@ -159,7 +259,11 @@ class _CommentSectionState extends State<CommentSection> {
         child: Column(
             children: [
               ListTile(
+<<<<<<< Updated upstream
                 leading: Image.asset('assets/images/logo.png'),
+=======
+                leading: CircleAvatar(backgroundImage: FileImage(gbdata.user_data.getFile),),
+>>>>>>> Stashed changes
                 title: Text(comment.username), //need username
                 subtitle: Text('Posted on ${comment.dateTimePosted}'),
               ),

@@ -12,41 +12,31 @@ import 'dart:ui';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'Comment/CommentSection.dart';
-
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
 
+  const HomePage({Key? key}) : super(key: key);
   @override
   State<HomePage> createState() => _HomePageState();
 }
-
 class _HomePageState extends State<HomePage> {
-  final RoundedLoadingButtonController _btnController1 = RoundedLoadingButtonController();
 
+  final RoundedLoadingButtonController _btnController1 = RoundedLoadingButtonController();
   void _doSomething(RoundedLoadingButtonController controller) async {
     Timer(Duration(seconds: 10), () {
       controller.success();
     });
   }
-
-  late List posts = [
-    'assets/images/pp1.JPG',
-    'assets/images/pp2.jpg',
-    'assets/images/pp1.JPG'
-  ];
-
-  _commentButtonPressed(Object postid) {
+  late List posts = ['assets/images/pp1.JPG','assets/images/pp2.jpg','assets/images/pp1.JPG'];
+  _commentButtonPressed(String postid) {
     setState(() {
       Navigator.push(
-          context, MaterialPageRoute(
-          builder: (context) => CommentSection(postid: postid)));
+          context, MaterialPageRoute(builder: (context) =>CommentSection(postid: postid)));
     });
   }
-
   bool sortByRatings = false;
-
   @override
   Widget build(BuildContext context) {
+
     return Container(
       child:
       Stack(
@@ -67,12 +57,11 @@ class _HomePageState extends State<HomePage> {
             ),
             Flex(
                 direction: Axis.vertical,
-                children: [
+                children:[
                   Expanded(child:
                   StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance.collection(
-                          'healthy_eatery').snapshots(),
-                      builder: (context, snapshot) {
+                      stream: (sortByRatings)?FirebaseFirestore.instance.collection("healthy_eatery").orderBy("rating",descending:true).snapshots(): FirebaseFirestore.instance.collection("healthy_eatery").orderBy("NAME").snapshots(),
+                      builder:(context,snapshot){
                         // Map<dynamic,dynamic> data = null;
                         //  FirebaseFirestore.instance.collection('gymLocation').get().then((snapshot) async{
                         //    if(snapshot.docs.isNotEmpty)
@@ -82,21 +71,22 @@ class _HomePageState extends State<HomePage> {
                         //  });
                         //
                         //  data["rating"] = 5.0;
-                        if (snapshot.hasError) {
+                        if(!snapshot.hasData){
+                          return Center( child: CircularProgressIndicator(),);
+                        }
+                        if(snapshot.hasError){
                           return Text('Something went wrong');
                         }
                         //else if(snapshot.hasData || snapshot.data!=null){
                         return _buildPostList(snapshot);
                         // }
                       }
-                  ))
-                ]
+                  ))]
             ),
           ]
       ),
     );
   }
-
   Widget _ratingBar(double rate) {
     return RatingBar.builder(
       initialRating: rate,
@@ -114,21 +104,22 @@ class _HomePageState extends State<HomePage> {
       onRatingUpdate: (rating) {},
     );
   }
-
   Widget _buildPostList(snapshot) {
     int countfood = 1;
+
     return ListView.builder(
+
         itemCount: snapshot.data?.docs.length,
         itemBuilder: (context, index) {
           List <QueryDocumentSnapshot> items = [];
           items = snapshot.data?.docs;
-          items.sort((a, b) {
-            if (sortByRatings) {
-              return b["rating"].compareTo(a["rating"]);
-            }
-            return a["NAME"].toLowerCase().compareTo(b["NAME"].toLowerCase());
-          });
-          QueryDocumentSnapshot<Object?>? documentSnapshot = items[index];
+          // items.sort((a,b) {
+          //   if(sortByRatings){
+          //     return b["rating"].compareTo(a["rating"]);
+          //   }
+          //   return a["NAME"].toLowerCase().compareTo(b["NAME"].toLowerCase());
+          // });
+          QueryDocumentSnapshot<Object?> documentSnapshot = items[index];
           return Card(
             color: Colors.black.withOpacity(0.8),
             margin: EdgeInsets.symmetric(
@@ -154,12 +145,12 @@ class _HomePageState extends State<HomePage> {
                                         : "",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(color: Colors.white,
-                                        fontSize: 25.0,
-                                        fontFamily: 'NotoSans',
+                                        fontSize: 20.0,
                                         fontWeight: FontWeight.bold,),
                                     ),
                                   ),
-                                ), Expanded(
+                                ),
+                                Expanded(
                                   flex: 1,
                                   child: SizedBox(
                                     width: 10.0,
@@ -173,14 +164,9 @@ class _HomePageState extends State<HomePage> {
                                         PopupMenuItem<int>(
                                           value: 0,
                                           child: (documentSnapshot != null)
-                                              ? (((documentSnapshot['liked']) !=
-                                              0) ? Text(
-                                              "Remove from Favourites",
+                                              ? Text("Add to Favourites",
                                               style: TextStyle(
-                                                  color: Colors.black)) : Text(
-                                              "Add to Favourites",
-                                              style: TextStyle(
-                                                  color: Colors.black)))
+                                                  color: Colors.black))
                                               : Text(""),
                                         ),
                                         PopupMenuItem<int>(
@@ -196,22 +182,8 @@ class _HomePageState extends State<HomePage> {
                                       onSelected: (item) {
                                         switch (item) {
                                           case 0:
-                                            setState(() { //-------------------------------------------------> database need to update too to save for next login(documentSnapshot != null?
-                                              (documentSnapshot != null)
-                                                  ? ((documentSnapshot['liked']) !=
-                                                  0
-                                                  ? FirebaseFirestore.instance
-                                                  .collection('gymLocation')
-                                                  .doc(documentSnapshot.id)
-                                                  .update({'liked': 0})
-                                                  : FirebaseFirestore.instance
-                                                  .collection('gymLocation')
-                                                  .doc(documentSnapshot.id)
-                                                  .update({'liked': 1}))
-                                                  : "";
-                                              //FirebaseFirestore.instance
-                                              //                 .collection('healthyEateries')
-                                              //                 .add({'liked': documentSnapshot[liked]})
+                                            setState(() { //-------------------------------------------------> database need to update too to save for next login
+                                              // (documentSnapshot!=null)? FirebaseFirestore.instance.collection('user_data').doc(user_id).update({'favourites': FieldValue.arrayUnion([documentSnapshot.id])}): "";
                                             });
                                             break;
                                           case 1:
@@ -226,7 +198,8 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ]
                           ),
-                        ), Stack(
+                        ),
+                        Stack(
                             children: [
                               Container(
                                 padding: EdgeInsets.fromLTRB(
@@ -255,83 +228,24 @@ class _HomePageState extends State<HomePage> {
                             ]
                         ),
                       ]
-                  ), Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Container(
-                        padding: EdgeInsets.only(bottom: 5.0),
-                        child: Row(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(
-                                  left: 5.0, right: 5.0, bottom: 2.0),
-                              child: RoundedLoadingButton(
-                                width: 60.0,
-                                controller: _btnController1,
-                                successIcon: Icons.pin_drop,
-                                failedIcon: Icons.wrong_location,
-                                child: Container(
-                                  margin: EdgeInsets.only(right: 5.0,),
-                                  padding: const EdgeInsets.fromLTRB(
-                                      10.0, 2.0, 5.0, 5.0),
-                                  child: Row(
-                                      children: [
-                                        Icon(Icons.directions),
-                                        Text('Directions',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontFamily: 'NotoSans',
-                                              fontWeight: FontWeight
-                                                  .bold,)),
-                                      ]
-                                  ),
-                                ),
-                                onPressed: () =>
-                                    _doSomething(_btnController1),
-                              ),
-                            ),
-                            RoundedLoadingButton(
-                              width: 20.0,
-                              controller: _btnController1,
-                              successIcon: Icons.pin_drop,
-                              failedIcon: Icons.wrong_location,
-                              color: Colors.white,
-                              valueColor: Colors.blue,
-                              errorColor: Colors.white,
-                              successColor: Colors.white,
-                              child: Container(
-                                margin: EdgeInsets.only(right: 5.0,),
-                                padding: const EdgeInsets.fromLTRB(
-                                    10.0, 2.0, 5.0, 5.0),
-                                child: Row(
-                                    children: [
-                                      Icon(Icons.gps_fixed_outlined,
-                                        color: Colors.blue,),
-                                      Text('Start', style: TextStyle(
-                                        color: Colors.blue,
-                                        fontFamily: 'NotoSans',
-                                        fontWeight: FontWeight.bold,)),
-                                    ]
-                                ),
-                              ),
-                              onPressed: () =>
-                                  _doSomething(_btnController1),
-                            ),
-                          ],
-                        ),
-                      ),
+
                       Container(
                         padding: EdgeInsets.only(right: 10.0),
                         child: IconButton(
                           iconSize: 40.0,
                           onPressed: () {
                             setState(() {
-                              // posts[index].setClick(true);
                               _commentButtonPressed(
-                                  (documentSnapshot != null) ? documentSnapshot
-                                      .id : 0);
+                                // print("+++++++++++++++++++++++++${snapshot.data.docs[index].id }");
+                                  (snapshot.data.docs[index] != null) ? snapshot.data
+                                      .docs[index].id : 0);
                             });
-                          }, color: Colors.grey,
+                          },
+                          color: Colors.grey,
                           icon: Icon(Icons.chat_bubble_rounded),
                         ),
                       ),

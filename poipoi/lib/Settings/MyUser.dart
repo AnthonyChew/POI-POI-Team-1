@@ -10,4 +10,14 @@ class MyUser {
 
   MyUser (this.id,this.name, this.birthday, this.is_male, this.imagePath);
 
+  String get getId{
+    return id;
+  }
+  File get getFile{
+    return imagePath;
+  }
+
+  String get getName{
+    return name;
+  }
 }
