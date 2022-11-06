@@ -5,6 +5,7 @@ Consists of a list of posts(or is it supposed to be just locations idk)
 Still need to figure out how users gonna interact with the posts
  */
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'dart:async';
@@ -179,12 +180,26 @@ class _HomePageState extends State<HomePage> {
                                                   color: Colors.black)),
                                         ),
                                       ],
-                                      onSelected: (item) {
-                                        switch (item) {
-                                          case 0:
-                                            setState(() { //-------------------------------------------------> database need to update too to save for next login
-                                              // (documentSnapshot!=null)? FirebaseFirestore.instance.collection('user_data').doc(user_id).update({'favourites': FieldValue.arrayUnion([documentSnapshot.id])}): "";
-                                            });
+                                      onSelected: (item) async {
+                                        switch(item){
+                                          case 0://-------------------------------------------------> database need to update too to save for next login
+                                            final docUser = FirebaseFirestore .instance .collection("user_data").doc(FirebaseAuth.instance.currentUser?.uid);
+                                            DocumentSnapshot<Map<String, dynamic>> map = await FirebaseFirestore.instance.collection("user_data").doc(FirebaseAuth.instance.currentUser?.uid).get();
+                                            final Map<String,dynamic> test= {"likeLocation" :[documentSnapshot.id]};
+                                            final Map<String, dynamic>? map1 = map.data();
+                                            if(!map1!.keys.contains("likeLocation"))
+                                            {
+                                              map1?.addAll(test);
+                                            }
+                                            else
+                                            {
+                                              List<dynamic> likeLocation = map1["likeLocation"];
+                                              if(!likeLocation.contains(documentSnapshot.id))
+                                              {
+                                                likeLocation.add(documentSnapshot.id);
+                                              }
+                                            }
+                                            docUser.set(map1);
                                             break;
                                           case 1:
                                             setState(() {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'MyUser.dart';
 import 'profile_widget.dart';
-import 'EditProfilePage.dart';
+import 'package:poipoi/Model/GlobalData.dart' as gbdata;
 import 'change_password_page.dart';
 import 'contact_us_page.dart';
 
@@ -254,6 +254,9 @@ class _SettingsState extends State<Settings> {
                   child: TextButton(
                     onPressed: () {
                       Navigator.popUntil(context, ModalRoute.withName('/'));
+                      gbdata.locations = [];
+                      gbdata.healthyEateryDate = [];
+                      gbdata.parkDate = [];
                     },
                     child: Text(
                       'Sign Out',

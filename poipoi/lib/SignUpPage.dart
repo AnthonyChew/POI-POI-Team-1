@@ -779,7 +779,8 @@ class signUp extends State<SignUpPage> {
                                               'is_male': isMale,
                                               'profile_pic_path': FirebaseAuth
                                                   .instance.currentUser!.uid
-                                                  .toString()
+                                                  .toString(),
+                                              'likeLocation': []
                                             });
 
                                             final user_data = MyUser(

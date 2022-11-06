@@ -8,6 +8,6 @@ FirebaseAuth auth = FirebaseAuth.instance;
 String? uuid = '';
 List<Map> healthyEateryDate = [];
 List<Map> parkDate = [];
-late final Position position;
+late  Position position;
 List<MyLocation> locations=[];
 late MyUser user_data;

@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
         "/restPassword": (BuildContext context) => ChangePasswordPage(),
         //add more routes here
       },
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -87,16 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     alignment: Alignment(-0.3, 0)),
               ),
             ),
-            Container(
-                width: 50.00,
-                height: 50.00,
-                margin: EdgeInsets.only(top: 30),
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: ExactAssetImage('assets/images/logo.png'),
-                    fit: BoxFit.contain,
-                  ),
-                )),
             Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
