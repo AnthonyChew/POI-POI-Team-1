@@ -14,6 +14,7 @@ import 'Navigator.dart' as mainScreen;
 import 'Settings/MyUser.dart';
 import 'Settings/EditProfilePage.dart';
 import 'package:path/path.dart';
+import 'package:poipoi/Comment/CommentSection.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         "/settings": (BuildContext context) =>
             setting.Settings(title: 'Settings'),
         "/editProfile": (BuildContext context) => EditProfilePage(),
+    //    "/commentPage": (BuildContext context) => CommentSection(),
         //add more routes here
       },
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'location.dart';
+
+
 class LocationCard extends StatelessWidget {
 
   final Location location;

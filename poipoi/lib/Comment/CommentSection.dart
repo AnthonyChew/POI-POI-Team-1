@@ -5,65 +5,150 @@ import 'package:intl/intl.dart';
 import 'Comment.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
+//left need get user profile pic and how to rebuild builder??
 
 class CommentSection extends StatefulWidget {
-  final Object postid;
   const CommentSection({Key? key, required this.postid}) : super(key: key);
-
+  final String postid;
 
   @override
-  State<CommentSection> createState() => _CommentSectionState(postid);
+  State<CommentSection> createState() => _CommentSectionState();
+
 }
 
 class _CommentSectionState extends State<CommentSection> {
 
-  _CommentSectionState(postid);
+  //_CommentSectionState();
+  late Future<List<Comment>> _commentsList;
 
-  get postid{
-    return postid;
+
+  @override
+  void initState(){
+    super.initState();
+    _commentsList = getList();
+    //print(widget.postid);
+
   }
 
-  List<Comment> _comments = []; //load past comments for the specific post here
-
   void _addComment(Comment val){
-    DocumentReference docRef = FirebaseFirestore.instance.collection("healthy_eatery").doc(this.postid).collection("comments").doc(val.username);
-    Map<String, String> comments={
-      "username": val.username,
-      "comment": val.comment,
-      "dateTime": val.dateTimePosted,
+      //print("\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n");
+      CollectionReference docRef = FirebaseFirestore.instance.collection("comments").doc( widget.postid + "comment").collection("1");
+     // print("\n\n-----------------------------------" + postid +"----------------------------------\n\n");
 
-    };
-    docRef.set(comments);
-    // setState(() {
-    //   _comments.add(val);
-    // });
+      //DocumentReference docRef1 = FirebaseFirestore.instance.collection("healthy_eatery").doc(postid);
+      Map<String, String> comments={
+        "username": val.username,
+        "comments": val.comment,
+        "datetime": val.dateTimePosted,
+
+      };
+      docRef.add(comments);
+      //getList();
+  //
+  //   //FirebaseFirestore.instance.collection("healthy_eatery").doc(postid).set({"comments": '/comments/${postid + "comment"}' });
+  //   // setState(() {
+  //   //   _comments.add(val);
+  //   // });
+   }
+
+
+  Future<List<Comment>> getList() async{
+    List<Comment> commentsList = [];
+    Map<dynamic, dynamic> mdata = new Map<dynamic,dynamic>();
+    await Future.delayed(Duration(seconds: 3));
+
+    var snapshot = await FirebaseFirestore.instance
+        .collection("healthy_eatery")
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      for (int i = 0; i < snapshot.docs.length; i++) {
+        Map<dynamic, dynamic> map = snapshot.docs[i].data();
+        if (map.keys.contains("comments")) {
+          DocumentReference<Map<dynamic, dynamic>> map1 = map["comments"];
+          print("${widget.postid}comment");
+          if(map1.id != "${widget.postid}comment") continue;
+        //  print("++++++++++++++++ ${map1.id}");
+
+          var snapshot = await FirebaseFirestore.instance
+              .collection("comments")
+              .get();
+
+       //    print("++++++++++++++++ ${snapshot.docs.length}");
+          for (int i = 0; i < snapshot.docs.length; i++) {
+            if (snapshot.docs[i].id == map1.id) {
+              //    print("++++++++++++++++ ${snapshot.docs[i].id}");
+
+              var test = await FirebaseFirestore.instance.collection("comments")
+                  .doc(map1.id).collection("1")
+                  .get();
+              var data = await test.docs;
+
+              for (int i = 0; i < data.length; i++) {
+                mdata = data[i].data();
+                // print("Comemnts :" + mdata['comments'] + " Testdata:" +
+                //     mdata['datetime']);
+                commentsList.add(Comment(username: mdata["username"],
+                    comment: mdata['comments'],
+                    dateTimePosted: mdata['datetime']));
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return Future.value(commentsList);
+
+
   }
 
 
   Widget _buildCommentList() {
 
-    return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('gymLocation').doc(this.postid).collection("comments").snapshots(),
-        builder:(context,snapshot){
-          if(snapshot.hasError){
-            return Text('Something went wrong');
-          }
-          if(!snapshot.hasData){
-            return Center( child: CircularProgressIndicator(),);
-          }
-          return ListView.builder(
-              itemCount: snapshot.data?.docs.length,
-              itemBuilder: (context, index){
-                QueryDocumentSnapshot<Object?>? comments = snapshot.data?.docs[index];
-                return _buildCommentItem(comments);
-              }
-          );
-        }
+    //Future<List> commentsList = await _buildList();
 
+    return StreamBuilder<List<Comment>>(
+      stream:Stream.fromFuture(_commentsList),  //dk how rebuild and order or use _commentsList but this doesnt rebuild unless refresh page; but getList() will keep refreshing
+      builder: (ctx, snapshot) {
+        // if (!snapshot.hasData) {
+        //   return Container(
+        //     child: Center(
+        //       child: CircularProgressIndicator(),
+        //     ),
+        //   );
+        // }
+        //List<Comment> comments = snapshot.data;
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
+            return _buildListView(snapshot);
+          default:
+            return _buildLoadingScreen();
+        }
+      },
+    );
+  }
+  Widget _buildListView(AsyncSnapshot<List<Comment>> snapshot) {
+
+    return ListView.builder(
+      itemBuilder: (ctx, idx) {
+        return _buildCommentItem( snapshot.data![idx] );
+      },
+      itemCount: snapshot.data!.length,
+    );
+  }
+  Widget _buildLoadingScreen() {
+    return Center(
+      child: Container(
+        width: 50,
+        height: 50,
+        child: CircularProgressIndicator(),
+      ),
     );
 
   }
+
+
 
   Widget _buildCommentItem(comment){
 
@@ -75,15 +160,15 @@ class _CommentSectionState extends State<CommentSection> {
             children: [
               ListTile(
                 leading: Image.asset('assets/images/logo.png'),
-                title: Text(comment["username"]), //need username
-                subtitle: Text('Posted on ${comment['dateTime']}'),
+                title: Text(comment.username), //need username
+                subtitle: Text('Posted on ${comment.dateTimePosted}'),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0,),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    comment["comment"],
+                    comment.comment,
                   ),
                 ),
               ),
@@ -115,6 +200,8 @@ class _CommentSectionState extends State<CommentSection> {
 
   @override
   Widget build(BuildContext context) {
+    //postid = ModalRoute.of(context)!.settings.arguments as String;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("COMMENTS",
@@ -166,11 +253,15 @@ class _CommentSectionState extends State<CommentSection> {
                       _submitted = true;
                     });
                     if(_errorText == null) {
+
                       DateTime now = DateTime.now();
                       String dateTime = DateFormat('dd-MM-yyyy kk:mm').format(now);
+                      print("\n\n==============+_+_+_+_+_+_+_++_++_+_+_+_+_=\n\n");
                       _addComment(Comment(username: 'Peter' ,comment: submit, dateTimePosted: dateTime));
+                      print("\n\n==============+_+_+_+_+_+_+_++_++_+_+_+_+_=\n\n");
                       _controller.clear(); //username, and pic
                       setState(() {
+
                         _submitted = false;
 
                       });

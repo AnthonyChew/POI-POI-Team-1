@@ -17,14 +17,20 @@ import 'Comment/CommentSection.dart';
 
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final user_id;
+  const HomePage({Key? key, required this.user_id}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState(user_id);
 }
 
 class _HomePageState extends State<HomePage> {
 
+  _HomePageState(user_id);
+
+  get user_id{
+    return user_id;
+  }
 
   final RoundedLoadingButtonController _btnController1 = RoundedLoadingButtonController();
 
@@ -37,10 +43,10 @@ class _HomePageState extends State<HomePage> {
   late List posts = ['assets/images/pp1.JPG','assets/images/pp2.jpg','assets/images/pp1.JPG'];
 
 
-  _commentButtonPressed(Object postid) {
+  _commentButtonPressed(String postid) {
     setState(() {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => CommentSection(postid: postid)));
+          context, MaterialPageRoute(builder: (context) =>CommentSection(postid: postid)));
     });
   }
 
@@ -75,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                 children:[
                   Expanded(child:
                   StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance.collection('healthy_eatery').snapshots(),
+                      stream: (sortByRatings)?FirebaseFirestore.instance.collection("healthy_eatery").orderBy("rating",descending:true).snapshots(): FirebaseFirestore.instance.collection("healthy_eatery").orderBy("NAME").snapshots(),
                       builder:(context,snapshot){
                         // Map<dynamic,dynamic> data = null;
                         //  FirebaseFirestore.instance.collection('gymLocation').get().then((snapshot) async{
@@ -86,6 +92,9 @@ class _HomePageState extends State<HomePage> {
                         //  });
                         //
                         //  data["rating"] = 5.0;
+                        if(!snapshot.hasData){
+                          return Center( child: CircularProgressIndicator(),);
+                        }
 
                         if(snapshot.hasError){
                           return Text('Something went wrong');
@@ -129,13 +138,13 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (context, index) {
         List <QueryDocumentSnapshot> items = [];
         items = snapshot.data?.docs;
-        items.sort((a,b) {
-          if(sortByRatings){
-            return b["rating"].compareTo(a["rating"]);
-          }
-          return a["NAME"].toLowerCase().compareTo(b["NAME"].toLowerCase());
-        });
-        QueryDocumentSnapshot<Object?>? documentSnapshot = items[index];
+        // items.sort((a,b) {
+        //   if(sortByRatings){
+        //     return b["rating"].compareTo(a["rating"]);
+        //   }
+        //   return a["NAME"].toLowerCase().compareTo(b["NAME"].toLowerCase());
+        // });
+        QueryDocumentSnapshot<Object?> documentSnapshot = items[index];
         return Card(
           color: Colors.black.withOpacity(0.8),
           margin: EdgeInsets.symmetric(
@@ -179,7 +188,7 @@ class _HomePageState extends State<HomePage> {
                                     itemBuilder: (context) => [
                                       PopupMenuItem<int>(
                                         value: 0,
-                                        child: (documentSnapshot!=null) ? (((documentSnapshot['liked'])!=0)? Text("Remove from Favourites",style: TextStyle(color: Colors.black)): Text("Add to Favourites",style: TextStyle(color: Colors.black))) : Text(""),
+                                        child: (documentSnapshot!=null) ? Text("Add to Favourites", style: TextStyle(color: Colors.black)):Text(""),
                                       ),
                                       PopupMenuItem<int>(
                                         value: 1,
@@ -194,10 +203,8 @@ class _HomePageState extends State<HomePage> {
                                       switch(item){
                                         case 0:
                                           setState(() {//-------------------------------------------------> database need to update too to save for next login
-                                            (documentSnapshot!=null) ? ((documentSnapshot['liked'])!=0 ? FirebaseFirestore.instance.collection('gymLocation').doc(documentSnapshot.id).update({'liked': 0}) : FirebaseFirestore.instance.collection('gymLocation').doc(documentSnapshot.id).update({'liked': 1})) : "";
-                                            //FirebaseFirestore.instance
-                                            //                 .collection('healthyEateries')
-                                            //                 .add({'liked': documentSnapshot[liked]})
+                                           // (documentSnapshot!=null)? FirebaseFirestore.instance.collection('user_data').doc(user_id).update({'favourites': FieldValue.arrayUnion([documentSnapshot.id])}): "";
+
                                           });
 
                                           break;
@@ -338,7 +345,8 @@ class _HomePageState extends State<HomePage> {
                         onPressed: () {
                           setState(() {
                             // posts[index].setClick(true);
-                            _commentButtonPressed((documentSnapshot!=null)? documentSnapshot.id : 0);
+                            //print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%${index}");
+                            _commentButtonPressed((documentSnapshot!=null)? snapshot.data.docs[index].id : 0);
                           });
                         },
                         color: Colors.grey,
