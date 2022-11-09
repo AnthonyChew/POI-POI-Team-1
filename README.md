@@ -1,8 +1,8 @@
-# POI-POI-Team-1
+# SC2006 Project POI-POI-Team-1
 
+Team 1: Chew Zhi Qi, Gan Hao Yi, Bong Jia Hui, Benjamin Chung Zhi Yong, Ji Hanyi, Ryu Hyunsun  
 
 App design(Wireframe) :https://miro.com/app/board/uXjVPckO14I=/
-
 
 Dataset used: </br>
 https://data.gov.sg/dataset/healthier-caterers </br>
