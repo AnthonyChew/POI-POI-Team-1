@@ -235,6 +235,7 @@ class _CommentSectionState extends State<CommentSection> {
             width: 380,
             child: TextField(
               controller: _controller,
+              maxLength: 3000,
               textInputAction: TextInputAction.go,
               onChanged: (String text) {
                 setState(() {
