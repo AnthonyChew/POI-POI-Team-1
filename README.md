@@ -10,3 +10,5 @@ https://data.gov.sg/dataset/gymssg </br>
 https://data.gov.sg/dataset/parkssg </br>
 https://data.gov.sg/dataset/sportsfieldssg </br>
 https://data.gov.sg/dataset/wateractivitiessg </br>
+
+We created a python code to convert kml data and populate the database.
