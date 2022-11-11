@@ -1,4 +1,4 @@
-# POI-POI-Team-1
+# SC2006 Project POI-POI-Team-1
 
 Team member: Chew Zhi Qi, Gan Hao Yi, Bong Jia Hui, Gan Hao Yi,Ji Hanyi,Ryu Hyunsun
 
