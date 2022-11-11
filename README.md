@@ -1,8 +1,12 @@
 # POI-POI-Team-1
 
+Team member: Chew Zhi Qi, Gan Hao Yi, Bong Jia Hui, Gan Hao Yi,Ji Hanyi,Ryu Hyunsun
 
-App design(Wireframe) :https://miro.com/app/board/uXjVPckO14I=/
-
+Deliverables:
+1. Documentation
+2. Application Skeleton Code
+3. MockUp Design (Miro Board: https://miro.com/app/board/uXjVPckO14I=/)
+4. Python script to populate datagov.sg to Firebase
 
 Dataset used: </br>
 https://data.gov.sg/dataset/healthier-caterers </br>
